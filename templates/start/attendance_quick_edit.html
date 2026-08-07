@@ -1,0 +1,25 @@
+{% extends "start/base.html" %}
+{% block title %}Davomatni belgilash{% endblock %}
+
+{% block content %}
+<h1>{{ student.full_name }} &mdash; {{ selected_date|date:"d.m.Y" }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Holati
+        <select name="status">
+            <option value="present" {% if attendance.status == "present" %}selected{% endif %}>Keldi</option>
+            <option value="absent" {% if attendance.status == "absent" or not attendance %}selected{% endif %}>Sababsiz kelmadi</option>
+            <option value="excused" {% if attendance.status == "excused" %}selected{% endif %}>Sababli kelmadi</option>
+        </select>
+    </label>
+    <label>Izoh
+        <input type="text" name="note" value="{{ attendance.note|default:'' }}" placeholder="Sababi (ixtiyoriy)">
+    </label>
+    <button type="submit" style="margin-top:16px;">Saqlash</button>
+</form>
+
+<p style="margin-top:16px;">
+    <a href="{% url 'attendance_report' tenant.category.slug tenant.id %}?date={{ selected_date|date:'Y-m-d' }}">&larr; Hisobotga qaytish</a>
+</p>
+{% endblock %}

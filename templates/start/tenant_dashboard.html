@@ -1,0 +1,398 @@
+{% extends "start/base.html" %}
+{% block title %}{{ tenant.name }} &mdash; Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    /* DASHBOARD HEADER */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .dashboard-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    /* STATS GRID */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        border-radius: 14px;
+        padding: 20px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0.9;
+        margin-top: 4px;
+    }
+
+    .stat-icon {
+        font-size: 36px;
+        opacity: 0.85;
+    }
+
+    /* CARD COLORS */
+    .bg-blue { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .bg-red { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+    .bg-amber { background: linear-gradient(135deg, #d97706, #b45309); }
+    .bg-slate { background: linear-gradient(135deg, #334155, #1e293b); }
+
+    /* ALERT STREAK BOX */
+    .alert-streak {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.05);
+    }
+
+    .alert-streak-title {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .streak-card {
+        background: #ffffff;
+        border-left: 4px solid #dc2626;
+        border-radius: 8px;
+        padding: 10px 14px;
+        min-width: 220px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    /* DATA PANELS GRID */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .panel-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        overflow: hidden;
+    }
+
+    .panel-header {
+        padding: 14px 18px;
+        font-weight: 700;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .header-amber { background: #fffbeb; color: #b45309; border-top: 4px solid #d97706; }
+    .header-red { background: #fef2f2; color: #b91c1c; border-top: 4px solid #dc2626; }
+    .header-green { background: #f0fdf4; color: #15803d; border-top: 4px solid #16a34a; }
+
+    .panel-body {
+        padding: 14px 18px;
+    }
+
+    /* BADGES & TEXT */
+    .badge-status {
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .badge-overdue { background: #fee2e2; color: #dc2626; }
+    .badge-soon { background: #fef3c7; color: #b45309; }
+
+    /* ACTION BUTTONS PANEL */
+    .actions-panel {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .actions-grid {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn.btn-primary-action {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+    }
+
+    .action-btn.btn-primary-action i {
+        color: #ffffff;
+    }
+
+    .action-btn.btn-primary-action:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+
+    .action-btn:hover:not(.btn-primary-action) {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #2563eb;
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="dashboard-header">
+    <h1 class="dashboard-title"><i class="bi bi-mortarboard-fill text-primary"></i> {{ tenant.name }}</h1>
+    <a href="{% url 'category_tenants' tenant.category.slug %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Tenantlarga qaytish
+    </a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card bg-blue">
+        <div>
+            <div class="stat-number">{{ total_students }}</div>
+            <div class="stat-label">O'quvchilar</div>
+        </div>
+        <i class="bi bi-people-fill stat-icon"></i>
+    </div>
+
+    <div class="stat-card bg-red">
+        <div>
+            <div class="stat-number">{{ absent_today_count }}</div>
+            <div class="stat-label">Bugun kelmaganlar</div>
+        </div>
+        <i class="bi bi-person-x-fill stat-icon"></i>
+    </div>
+
+    <div class="stat-card bg-amber">
+        <div>
+            <div class="stat-number">{{ teachers_count }}</div>
+            <div class="stat-label">Ustozlar</div>
+        </div>
+        <i class="bi bi-person-workspace stat-icon"></i>
+    </div>
+
+    <div class="stat-card bg-slate">
+        <div>
+            <div class="stat-number">{{ groups_count }}</div>
+            <div class="stat-label">Guruhlar</div>
+        </div>
+        <i class="bi bi-journal-bookmark-fill stat-icon"></i>
+    </div>
+</div>
+
+{% if streak_warnings %}
+<div class="alert-streak">
+    <div class="alert-streak-title">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i> Ketma-ket 3 dars qoldirgan o'quvchilar
+    </div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        {% for s in streak_warnings %}
+        <div class="streak-card">
+            <div style="font-weight:700; color:#0f172a; font-size:14px;">{{ s.full_name }}</div>
+            <div style="font-size:12px; color:#64748b; margin-top:2px;">
+                <i class="bi bi-journal-text"></i> {{ s.group.name|default:"-" }}
+                {% if s.phone %}<span style="margin-left:6px;"><i class="bi bi-telephone-fill text-success"></i> {{ s.phone }}</span>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="dashboard-grid">
+    <div class="panel-card">
+        <div class="panel-header header-amber">
+            <i class="bi bi-clock-history"></i> To'lov muddati yaqinlashganlar (5 kun)
+        </div>
+        <div class="panel-body">
+            {% if due_soon %}
+            <table>
+                <thead>
+                    <tr><th>O'quvchi</th><th>Guruh</th><th>Muddat</th><th>Holat</th></tr>
+                </thead>
+                <tbody>
+                    {% for p in due_soon %}
+                    <tr>
+                        <td><strong>{{ p.student.full_name }}</strong></td>
+                        <td>{{ p.student.group.name|default:"-" }}</td>
+                        <td>{{ p.due_date|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if p.is_overdue %}
+                                <span class="badge-status badge-overdue">Kechikkan</span>
+                            {% else %}
+                                <span class="badge-status badge-soon">Yaqin</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty">Hozircha yo'q.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-header header-red">
+            <i class="bi bi-person-slash"></i> Sababsiz kelmaganlar
+        </div>
+        <div class="panel-body">
+            {% if absent_unexcused %}
+            <table>
+                <thead>
+                    <tr><th>O'quvchi</th><th>Izoh</th></tr>
+                </thead>
+                <tbody>
+                    {% for a in absent_unexcused %}
+                    <tr>
+                        <td><strong>{{ a.student.full_name }}</strong></td>
+                        <td>{{ a.note|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty">Bugun sababsiz kelmaganlar yo'q.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="panel-card">
+        <div class="panel-header header-amber">
+            <i class="bi bi-info-circle-fill"></i> Sababli kelmaganlar
+        </div>
+        <div class="panel-body">
+            {% if absent_excused %}
+            <table>
+                <thead>
+                    <tr><th>O'quvchi</th><th>Izoh</th></tr>
+                </thead>
+                <tbody>
+                    {% for a in absent_excused %}
+                    <tr>
+                        <td><strong>{{ a.student.full_name }}</strong></td>
+                        <td>{{ a.note|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty">Bugun sababli kelmaganlar yo'q.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-header header-green">
+            <i class="bi bi-check-circle-fill"></i> Bugun kelganlar
+        </div>
+        <div class="panel-body">
+            {% if present_today %}
+            <table>
+                <thead>
+                    <tr><th>O'quvchi</th><th>Guruh</th></tr>
+                </thead>
+                <tbody>
+                    {% for a in present_today %}
+                    <tr>
+                        <td><strong>{{ a.student.full_name }}</strong></td>
+                        <td>{{ a.student.group.name|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty">Hali davomat qilinmagan.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="actions-panel">
+    <h3 style="font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.03em;">Boshqaruv va Amallar</h3>
+    <div class="actions-grid">
+        <a class="action-btn btn-primary-action" href="{% url 'tenant_attendance_today' tenant.category.slug tenant.id %}">
+            <i class="bi bi-calendar-check-fill"></i> Bugungi davomat
+        </a>
+        <a class="action-btn" href="{% url 'payment_list' tenant.category.slug tenant.id %}">
+            <i class="bi bi-cash-coin"></i> To'lovlar
+        </a>
+    </div>
+</div>
+
+{% endblock %}

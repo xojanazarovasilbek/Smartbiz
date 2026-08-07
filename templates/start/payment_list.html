@@ -1,0 +1,49 @@
+{% extends "start/base.html" %}
+{% block title %}Tolovlar{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+<h1>💰 To'lovlar</h1>
+
+<div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <a class="button" style="background:#16a34a;" href="{% url 'payment_create' tenant.category.slug tenant.id %}">+ Yangi to'lov</a>
+    <a class="button" href="{% url 'payment_report' tenant.category.slug tenant.id %}">📑 Oylik hisobot</a>
+</div>
+
+<p class="empty" style="margin-top:10px;">Har bir o'quvchining faqat eng oxirgi to'lovi ko'rsatilgan. To'liq tarix uchun ismini bosing.</p>
+
+{% if payments %}
+<table style="margin-top:14px;">
+    <tr><th>O'quvchi</th><th>Oy</th><th>Muddat</th><th>Summa</th><th>Tolov turi</th><th>Holati</th><th></th></tr>
+    {% for p in payments %}
+    <tr>
+        <td><a href="{% url 'tenant_student_detail' tenant.category.slug tenant.id p.student.id %}">{{ p.student.full_name }}</a></td>
+        <td>{{ p.month|date:"Y-m" }}</td>
+        <td>{{ p.due_date|date:"d.m.Y" }}</td>
+        <td>{{ p.amount|default:"-" }}</td>
+        <td>{{ p.get_payment_type_display }}</td>
+        <td>
+            {% if p.is_paid %}
+                <span style="color:#16a34a;">✅ Tolangan</span>
+            {% elif p.is_overdue %}
+                <span style="color:#dc2626;">⛔ Kechikkan</span>
+            {% else %}
+                <span style="color:#d97706;">⏳ Kutilmoqda</span>
+            {% endif %}
+        </td>
+        <td>
+            <form method="post" action="{% url 'payment_mark_paid' tenant.category.slug tenant.id p.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="padding:4px 10px; font-size:12px; {% if p.is_paid %}background:#6b7280;{% else %}background:#16a34a;{% endif %}">
+                    {% if p.is_paid %}Bekor qilish{% else %}To'landi{% endif %}
+                </button>
+            </form>
+            <a href="{% url 'payment_delete' tenant.category.slug tenant.id p.pk %}" style="font-size:12px; margin-left:6px; color:#dc2626;">Ochirish</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Hozircha tolov yozuvi yoq.</p>
+{% endif %}
+{% endblock %}

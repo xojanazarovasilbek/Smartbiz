@@ -1,0 +1,234 @@
+{% extends "start/base.html" %}
+{% block title %}Kategoriyalar &mdash; SmartBiz{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        margin-bottom: 32px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 15px;
+        margin-top: 6px;
+        font-weight: 500;
+    }
+
+    /* CATEGORY CARDS GRID */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    /* ACTIVATED CARD */
+    .category-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: transparent;
+        transition: background 0.25s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+        border-color: #bfdbfe;
+    }
+
+    .category-card:hover::before {
+        background: #2563eb;
+    }
+
+    /* LOCKED CARD */
+    .category-card-disabled {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        opacity: 0.75;
+        position: relative;
+        cursor: not-allowed;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .category-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        transition: all 0.25s ease;
+    }
+
+    .category-card:hover .category-icon-wrapper {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+    .icon-disabled {
+        background: #f1f5f9;
+        color: #94a3b8;
+    }
+
+    .category-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        text-transform: capitalize;
+        line-height: 1.2;
+    }
+
+    .category-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 12px;
+        padding-top: 14px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .tenant-badge {
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        background: #f8fafc;
+        padding: 4px 10px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .locked-badge {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-arrow {
+        color: #2563eb;
+        font-size: 15px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: transform 0.2s ease;
+    }
+
+    .category-card:hover .action-arrow {
+        transform: translateX(4px);
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title"><i class="bi bi-grid-fill text-primary"></i> Kategoriyalar</h1>
+    <p class="page-subtitle">Kerakli modul va korxonalarni boshqarish uchun kategoriyalardan birini tanlang</p>
+</div>
+
+<div class="categories-grid">
+    {% for cat in categories %}
+        {% if cat.is_available %}
+        <a href="{% url 'category_tenants' cat.slug %}" class="category-card">
+            <div>
+                <div class="category-header">
+                    <div class="category-icon-wrapper">
+                        {% if cat.module_type == "pos" or cat.slug == "mini-marketlar" %}
+                            <i class="bi bi-shop"></i>
+                        {% elif cat.module_type == "qur" or cat.slug == "qurilish-mollari" %}
+                            <i class="bi bi-bricks"></i>
+                        {% elif cat.module_type == "bogcha" or cat.slug == "bogcha" %}
+                            <i class="bi bi-emoji-smile"></i>
+                        {% else %}
+                            <i class="bi bi-buildings"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h3 class="category-name">{{ cat.name }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-footer">
+                <span class="tenant-badge">
+                    <i class="bi bi-building"></i> {{ cat.tenant_count }} ta tenant
+                </span>
+                <span class="action-arrow">
+                    Kirish <i class="bi bi-arrow-right"></i>
+                </span>
+            </div>
+        </a>
+        {% else %}
+        <div class="category-card-disabled">
+            <div>
+                <div class="category-header">
+                    <div class="category-icon-wrapper icon-disabled">
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
+                    <div>
+                        <h3 class="category-name" style="color: #64748b;">{{ cat.name }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-footer">
+                <span class="locked-badge">
+                    <i class="bi bi-hourglass-split"></i> Modul tayyorlanmoqda
+                </span>
+            </div>
+        </div>
+        {% endif %}
+    {% empty %}
+    <div style="grid-column: 1 / -1; background: #fff; padding: 40px; border-radius: 16px; text-align: center; border: 1px solid #e2e8f0;">
+        <i class="bi bi-folder-x" style="font-size: 48px; color: #94a3b8;"></i>
+        <h3 style="margin-top: 12px; color: #475569;">Hozircha hech qanday kategoriya yo'q</h3>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

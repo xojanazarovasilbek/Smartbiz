@@ -1,0 +1,20 @@
+{% extends "start/base.html" %}
+{% block title %}Kunlik qayd{% endblock %}
+
+{% block content %}
+<h1>📋 {{ child.full_name }} &mdash; {{ today|date:"d.m.Y" }}</h1>
+<p class="empty">⚠ Diqqat: bu yozuv saqlangandan keyin o'zgartirib bo'lmaydi.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Kelgan vaqti
+        <input type="time" name="arrival_time" required>
+    </label>
+    <label>Sog'lig'i haqida izoh (majburiy)
+        <textarea name="health_note" rows="3" required placeholder="Masalan: sog'lom, kayfiyati yaxshi"></textarea>
+    </label>
+    <button type="submit" style="margin-top:16px;">Saqlash (qayta o'zgartirib bo'lmaydi)</button>
+</form>
+
+<p style="margin-top:16px;"><a href="{% url 'child_detail' tenant.category.slug tenant.id child.pk %}">&larr; Bola sahifasiga qaytish</a></p>
+{% endblock %}

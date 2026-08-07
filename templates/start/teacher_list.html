@@ -1,0 +1,202 @@
+{% extends "start/base.html" %}
+{% block title %}Ustozlar &mdash; {{ tenant.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* BUTTONS */
+    .btn-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+
+    /* DATA TABLE */
+    .table-container {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .custom-table th {
+        background: #f8fafc;
+        padding: 14px 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .custom-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-table tr:hover td {
+        background: #f8fafc;
+    }
+
+    .teacher-name {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .subject-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid #bfdbfe;
+    }
+
+    .action-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-link:hover {
+        color: #1d4ed8;
+    }
+</style>
+
+<div>
+    <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Dashboardga qaytish
+    </a>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-person-workspace text-primary"></i> Ustozlar
+        </h1>
+        <a class="btn-custom btn-primary-custom" href="{% url 'teacher_create' tenant.category.slug tenant.id %}">
+            <i class="bi bi-person-plus-fill"></i> + Yangi ustoz
+        </a>
+    </div>
+</div>
+
+{% if teachers %}
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Ism va Familiya</th>
+                <th>Fan</th>
+                <th>Telefon</th>
+                <th style="text-align: right;">Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in teachers %}
+            <tr>
+                <td>
+                    <span class="teacher-name">{{ t.full_name }}</span>
+                </td>
+                <td>
+                    {% if t.subject %}
+                        <span class="subject-badge">
+                            <i class="bi bi-book me-1"></i> {{ t.subject }}
+                        </span>
+                    {% else %}
+                        <span style="color: #94a3b8;">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="font-family: monospace; font-weight: 600; color: #334155;">{{ t.phone|default:"-" }}</span>
+                </td>
+                <td style="text-align: right;">
+                    <a class="action-link" href="{% url 'teacher_detail' tenant.category.slug tenant.id t.pk %}">
+                        Ko'rish <i class="bi bi-chevron-right"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 48px; border-radius: 16px; text-align: center;">
+    <i class="bi bi-person-x" style="font-size: 48px; color: #94a3b8;"></i>
+    <h3 style="margin-top: 12px; color: #475569; font-size: 16px;">Hozircha ustoz yo'q. Yuqoridagi tugma orqali qo'shing.</h3>
+</div>
+{% endif %}
+
+{% endblock %}

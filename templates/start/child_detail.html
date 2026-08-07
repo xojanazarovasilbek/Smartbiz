@@ -1,0 +1,119 @@
+{% extends "start/base.html" %}
+{% block title %}{{ child.full_name }}{% endblock %}
+
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <h1 style="margin:0;">👶 {{ child.full_name }}</h1>
+    <div style="display:flex; gap:10px;">
+        <a class="button" href="{% url 'child_edit' tenant.category.slug tenant.id child.pk %}">Tahrirlash</a>
+        <a class="button" style="background:#dc2626;" href="{% url 'child_delete' tenant.category.slug tenant.id child.pk %}">Ochirish</a>
+    </div>
+</div>
+
+<div style="display:flex; gap:16px; margin-top:16px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px; border-radius:8px; box-shadow:0 0 0 1px #eee; padding:16px;">
+        {% if child.photo %}<img src="{{ child.photo.url }}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; margin-bottom:10px;">{% endif %}
+        <p style="margin:4px 0;"><strong>Guruh:</strong> {{ child.group.name|default:"-" }}</p>
+        <p style="margin:4px 0;"><strong>Yoshi:</strong> {{ child.age_years }}</p>
+        <p style="margin:4px 0;"><strong>Guvohnoma/ID:</strong> {{ child.id_document|default:"-" }}</p>
+        <p style="margin:4px 0;"><strong>Telefon:</strong> {{ child.phone|default:"-" }}</p>
+        <p style="margin:4px 0;"><strong>Ota:</strong> {{ child.father_name|default:"-" }} ({{ child.father_id|default:"-" }})</p>
+        <p style="margin:4px 0;"><strong>Ona:</strong> {{ child.mother_name|default:"-" }} ({{ child.mother_id|default:"-" }})</p>
+        <p style="margin:4px 0;"><strong>Sog'lig'i:</strong> {{ child.health_condition|default:"-" }}</p>
+    </div>
+
+    <div style="flex:1; min-width:280px; border-radius:8px; box-shadow:0 0 0 1px #eee; padding:16px;">
+        <strong>📋 Bugungi qayd ({{ today|date:"d.m.Y" }})</strong>
+        {% if today_log %}
+        <p style="margin:8px 0 0;">✅ Kelgan vaqti: <strong>{{ today_log.arrival_time|time:"H:i" }}</strong></p>
+        <p style="margin:4px 0;">Sog'lig'i: {{ today_log.health_note }}</p>
+        <p style="color:#999; font-size:12px;">🔒 Bu yozuv o'zgartirilmaydi.</p>
+        {% else %}
+        <p class="empty">Bugun hali qayd etilmagan.</p>
+        <a class="button" style="margin-top:8px;" href="{% url 'daily_log_create' tenant.category.slug tenant.id child.pk %}">Bugungi qaydni kiritish</a>
+        {% endif %}
+
+        <div style="margin-top:16px;">
+            <strong>🍲 Bugungi ovqatlanish</strong>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+                {% for value, label in meal_choices %}
+                <form method="post" action="{% url 'meal_serving_toggle' tenant.category.slug tenant.id child.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="meal_type" value="{{ value }}">
+                    <button type="submit" style="font-size:12px; padding:6px 10px;">{{ label }} - Qabul qildim</button>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-top:16px;">
+            <a class="button" href="{% url 'pickup_log_create' tenant.category.slug tenant.id child.pk %}">🚶 Bolani topshirish</a>
+        </div>
+    </div>
+</div>
+
+<div style="display:flex; gap:16px; margin-top:20px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+        <h2 style="font-size:16px;">✅ Olib ketishga ruxsat berilganlar</h2>
+        {% if authorized %}
+        <table>
+            <tr><th>Ism</th><th>Kim boladi</th><th>Telefon</th><th></th></tr>
+            {% for a in authorized %}
+            <tr>
+                <td>{{ a.full_name }}</td>
+                <td>{{ a.relation|default:"-" }}</td>
+                <td>{{ a.phone|default:"-" }}</td>
+                <td>
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="remove_pickup">
+                        <input type="hidden" name="pickup_id" value="{{ a.id }}">
+                        <button type="submit" style="font-size:12px; background:#dc2626;">Ochirish</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">Hozircha ruxsat berilgan shaxs yoq.</p>
+        {% endif %}
+
+        <form method="post" style="margin-top:10px;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_pickup">
+            <label>Ism <input type="text" name="pickup_name" required></label>
+            <label>Kim boladi <input type="text" name="pickup_relation" placeholder="Masalan: buvi"></label>
+            <label>Telefon <input type="text" name="pickup_phone"></label>
+            <button type="submit" style="margin-top:10px;">+ Qoshish</button>
+        </form>
+    </div>
+
+    <div style="flex:1; min-width:280px;">
+        <h2 style="font-size:16px;">📅 Kunlik qaydlar tarixi</h2>
+        {% if daily_logs %}
+        <table>
+            <tr><th>Sana</th><th>Kelgan vaqt</th><th>Sog'lig'i</th></tr>
+            {% for log in daily_logs %}
+            <tr><td>{{ log.date|date:"d.m.Y" }}</td><td>{{ log.arrival_time|time:"H:i" }}</td><td>{{ log.health_note }}</td></tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">Hali qayd yo'q.</p>
+        {% endif %}
+
+        <h2 style="font-size:16px; margin-top:20px;">🚶 Topshirish tarixi</h2>
+        {% if pickup_logs %}
+        <table>
+            <tr><th>Sana</th><th>Vaqt</th><th>Kim oldi</th></tr>
+            {% for p in pickup_logs %}
+            <tr><td>{{ p.date|date:"d.m.Y" }}</td><td>{{ p.time|time:"H:i" }}</td><td>{{ p.picked_up_by_name }} ({{ p.get_relation_display }})</td></tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">Hali topshirish yozuvi yo'q.</p>
+        {% endif %}
+    </div>
+</div>
+
+<p style="margin-top:16px;"><a href="{% url 'child_list' tenant.category.slug tenant.id %}">&larr; Royxatga qaytish</a></p>
+{% endblock %}

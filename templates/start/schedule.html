@@ -1,0 +1,46 @@
+{% extends "start/base.html" %}
+{% block title %}Dars Jadvali{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+
+<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <h1 style="margin:0;">🖐 Guruhlar Dars Jadvali</h1>
+    <div style="display:flex; gap:8px;">
+        <a class="button" href="?week={{ week_offset|add:"-1" }}">&#9664; Oldingi hafta</a>
+        <a class="button" style="background:#16a34a;" href="?week=0">Bugungi hafta</a>
+        <a class="button" href="?week={{ week_offset|add:"1" }}">Keyingi hafta &#9654;</a>
+    </div>
+</div>
+
+<div style="overflow-x:auto; margin-top:16px;">
+<table>
+    <tr>
+        <th>Guruh</th>
+        {% for d in days %}
+        <th style="{% if d.is_today %}background:#dcfce7;{% endif %}">{{ d.label }}<br><span style="font-weight:normal; font-size:12px;">{{ d.date|date:"d.m" }}</span></th>
+        {% endfor %}
+    </tr>
+    {% for g in groups %}
+    <tr>
+        <td>
+            <strong>{{ g.name }}</strong><br>
+            <span style="font-size:12px; color:#777;">{{ g.teacher.full_name|default:"-" }}</span><br>
+            <a href="{% url 'group_edit' tenant.category.slug tenant.id g.pk %}" style="font-size:12px;">Vaqt belgilash</a>
+        </td>
+        {% for d in days %}
+        <td style="text-align:center; {% if d.is_today %}background:#f0fdf4;{% endif %}">
+            {% if d.code in g.get_days_list %}
+                {% if g.start_time %}{{ g.start_time|time:"H:i" }} - {{ g.end_time|time:"H:i" }}{% else %}✓{% endif %}
+            {% else %}
+                <span style="color:#ccc;">&mdash;</span>
+            {% endif %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" class="empty">Hozircha guruh yoq.</td></tr>
+    {% endfor %}
+</table>
+</div>
+{% endblock %}

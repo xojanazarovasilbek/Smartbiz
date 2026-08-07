@@ -1,0 +1,13 @@
+{% extends "start/base.html" %}
+{% block title %}Ochirishni tasdiqlash{% endblock %}
+
+{% block content %}
+<h1>Bolani ochirishni tasdiqlaysizmi?</h1>
+<p>{{ child.full_name }} rostdan ham ochirilsinmi? Uning barcha davomat/ovqat/topshirish tarixi ham ochiriladi.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background:#dc2626; margin-top:12px;">Ha, ochirish</button>
+</form>
+<p style="margin-top:12px;"><a href="{% url 'child_detail' tenant.category.slug tenant.id child.pk %}">Bekor qilish</a></p>
+{% endblock %}

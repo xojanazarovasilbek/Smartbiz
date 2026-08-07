@@ -1,0 +1,255 @@
+{% extends "start/base.html" %}
+{% block title %}Savatga qo'shish{% endblock %}
+
+{% block content %}
+<style>
+    .cart-add-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 16px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #4b5563;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #111827;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 16px 0;
+    }
+
+    .alert-banner {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        font-size: 0.95rem;
+        background-color: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .product-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .product-table th {
+        background-color: #f9fafb;
+        color: #374151;
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .product-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f3f4f6;
+        color: #111827;
+        font-size: 0.95rem;
+        vertical-align: middle;
+    }
+
+    .product-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .product-table tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .qty-input {
+        width: 90px;
+        padding: 8px 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .qty-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .total-section {
+        margin-top: 20px;
+        padding: 16px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .total-text {
+        font-size: 1.1rem;
+        color: #111827;
+    }
+
+    .total-amount {
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .btn-submit {
+        background-color: #2563eb;
+        color: #ffffff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-submit:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    .btn-checkout {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #16a34a;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-checkout:hover {
+        background-color: #15803d;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #6b7280;
+        padding: 40px 0;
+        font-size: 1rem;
+    }
+</style>
+
+<div class="cart-add-container">
+    <a href="{% url 'sale_category_list' tenant.category.slug tenant.id %}" class="back-link">
+        &larr; Kategoriyalarga qaytish
+    </a>
+
+    <h1 class="page-title">🛒 {% if category %}{{ category.name }}{% else %}Kategoriyasiz mahsulotlar{% endif %}</h1>
+
+    {% if sale.items.count %}
+    <div class="alert-banner">
+        Savatda hozircha <strong>{{ sale.items.count }} ta</strong> mahsulot bor (<strong>{{ sale.total_amount }}</strong> so'm). Bu yerdan yana qo'shishingiz mumkin.
+    </div>
+    {% endif %}
+
+    {% if products %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="table-wrapper">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Mahsulot</th>
+                        <th>Narxi</th>
+                        <th>Birlik</th>
+                        <th>Qoldiq</th>
+                        <th>Miqdor</th>
+                        <th>Jami</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td><strong>{{ p.name }}</strong></td>
+                        <td class="price" data-price="{{ p.effective_price }}">{{ p.effective_price }} so'm</td>
+                        <td>{{ p.get_unit_display }}</td>
+                        <td>{{ p.quantity }}</td>
+                        <td>
+                            <input type="number" step="0.01" class="qty-input" name="qty_{{ p.id }}" min="0" max="{{ p.quantity }}" placeholder="0">
+                        </td>
+                        <td><strong class="line-total">0</strong> so'm</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-section">
+            <div class="total-text">
+                Shu bo'limdan qo'shiladigan summa: <span class="total-amount" id="grand-total">0</span> so'm
+            </div>
+            <button type="submit" class="btn-submit">+ Savatga qo'shish</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="empty-state">
+        Bu kategoriyada mahsulot yo'q.
+    </div>
+    {% endif %}
+
+    {% if sale.items.count %}
+    <div style="margin-top: 16px;">
+        <a class="btn-checkout" href="{% url 'sale_checkout' tenant.category.slug tenant.id %}">
+            Savatni ko'rish / To'lovga o'tish &rarr;
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('input', function (e) {
+    if (!e.target.classList.contains('qty-input')) return;
+
+    var rows = document.querySelectorAll('.qty-input');
+    var grandTotal = 0;
+
+    rows.forEach(function (input) {
+        var row = input.closest('tr');
+        var price = parseFloat(row.querySelector('.price').dataset.price) || 0;
+        var qty = parseFloat(input.value) || 0;
+        var lineTotal = price * qty;
+        
+        row.querySelector('.line-total').textContent = lineTotal.toLocaleString('uz-UZ');
+        grandTotal += lineTotal;
+    });
+
+    document.getElementById('grand-total').textContent = grandTotal.toLocaleString('uz-UZ');
+});
+</script>
+{% endblock %}

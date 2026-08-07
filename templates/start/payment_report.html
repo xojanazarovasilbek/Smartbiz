@@ -1,0 +1,55 @@
+{% extends "start/base.html" %}
+{% block title %}Tolovlar hisoboti{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'payment_list' tenant.category.slug tenant.id %}">&larr; Tolovlar royxatiga qaytish</a></p>
+
+<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <h1 style="margin:0;">📑 Tolovlar hisoboti</h1>
+    <div style="display:flex; gap:8px;">
+        <a class="button" href="?month={{ prev_month|date:'Y-m' }}">&#9664; Oldingi oy</a>
+        <a class="button" href="?month={{ next_month|date:'Y-m' }}">Keyingi oy &#9654;</a>
+    </div>
+</div>
+
+<p class="empty">Oy: <strong>{{ selected_month|date:"Y-m" }}</strong></p>
+
+<div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:140px; background:#2563eb; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ total_amount }}</div>
+        <div style="font-size:13px;">Jami summa</div>
+    </div>
+    <div style="flex:1; min-width:140px; background:#16a34a; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ paid_amount }}</div>
+        <div style="font-size:13px;">Tolangan ({{ paid_count }} ta)</div>
+    </div>
+    <div style="flex:1; min-width:140px; background:#dc2626; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ debt_amount }}</div>
+        <div style="font-size:13px;">Qarzdorlik ({{ unpaid_count }} ta)</div>
+    </div>
+</div>
+
+{% if payments %}
+<table style="margin-top:20px;">
+    <tr><th>O'quvchi</th><th>Muddat</th><th>Summa</th><th>Holati</th></tr>
+    {% for p in payments %}
+    <tr>
+        <td>{{ p.student.full_name }}</td>
+        <td>{{ p.due_date|date:"d.m.Y" }}</td>
+        <td>{{ p.amount|default:"-" }}</td>
+        <td>
+            {% if p.is_paid %}
+                <span style="color:#16a34a;">Tolangan</span>
+            {% elif p.is_overdue %}
+                <span style="color:#dc2626;">Kechikkan</span>
+            {% else %}
+                <span style="color:#d97706;">Kutilmoqda</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty" style="margin-top:20px;">Bu oy uchun hali tolov yozuvi yoq.</p>
+{% endif %}
+{% endblock %}

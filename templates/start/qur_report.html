@@ -1,0 +1,66 @@
+{% extends "start/base.html" %}
+{% block title %}POS hisobot{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+<h1>📈 Hisobotlar</h1>
+
+<form method="get" style="display:flex; gap:10px; align-items:end; flex-wrap:wrap; margin-top:10px;">
+    <label>Boshlanish
+        <input type="date" name="start" value="{{ start_date|date:'Y-m-d' }}">
+    </label>
+    <label>Tugash
+        <input type="date" name="end" value="{{ end_date|date:'Y-m-d' }}">
+    </label>
+    <button type="submit">Filtrlash</button>
+</form>
+
+<div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:140px; background:#16a34a; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ total_revenue }}</div>
+        <div style="font-size:13px;">Jami daromad</div>
+    </div>
+    <div style="flex:1; min-width:140px; background:#2563eb; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ sales_count }}</div>
+        <div style="font-size:13px;">Sotuvlar soni</div>
+    </div>
+</div>
+
+<h2 style="margin-top:24px; font-size:16px;">Mahsulot bo'yicha sotuv</h2>
+{% if product_stats %}
+<table>
+    <tr><th>Mahsulot</th><th>Sotilgan miqdor</th><th>Daromad</th></tr>
+    {% for p in product_stats %}
+    <tr>
+        <td>{{ p.product__name }}</td>
+        <td>{{ p.total_qty }}</td>
+        <td>{{ p.total_revenue }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Bu davrda sotuv yoq.</p>
+{% endif %}
+
+<h2 style="margin-top:24px; font-size:16px;">Ombor qoldig'i (joriy holat)</h2>
+{% if stock %}
+<table>
+    <tr><th>Mahsulot</th><th>Qoldiq</th><th>Holati</th></tr>
+    {% for p in stock %}
+    <tr style="{% if p.is_low_stock %}background:#fef2f2;{% endif %}">
+        <td>{{ p.name }}</td>
+        <td>{{ p.quantity }}</td>
+        <td>
+            {% if p.is_low_stock %}
+                <span style="color:#dc2626;">Kam qoldi</span>
+            {% else %}
+                <span style="color:#16a34a;">Yetarli</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Hozircha mahsulot yoq.</p>
+{% endif %}
+{% endblock %}

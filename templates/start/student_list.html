@@ -1,0 +1,317 @@
+{% extends "start/base.html" %}
+{% block title %}O'quvchilar &mdash; {{ tenant.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* SEARCH & FILTER BAR */
+    .filter-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 380px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 16px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .search-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* BUTTONS */
+    .btn-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+
+    .btn-secondary-custom {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    /* DATA TABLE */
+    .table-container {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .custom-table th {
+        background: #f8fafc;
+        padding: 14px 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .custom-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-table tr:hover td {
+        background: #f8fafc;
+    }
+
+    .student-name {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    /* BADGES FOR PAYMENTS */
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-danger {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .badge-warning {
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+    }
+
+    .badge-success {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+
+    .badge-muted {
+        background: #f8fafc;
+        color: #94a3b8;
+        border: 1px solid #e2e8f0;
+    }
+
+    .action-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-link:hover {
+        color: #1d4ed8;
+    }
+</style>
+
+<div>
+    <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Dashboardga qaytish
+    </a>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-people-fill text-primary"></i> {{ tenant.name }} &mdash; O'quvchilar
+        </h1>
+        <a class="btn-custom btn-primary-custom" href="{% url 'tenant_student_create' tenant.category.slug tenant.id %}">
+            <i class="bi bi-person-plus-fill"></i> + Yangi o'quvchi
+        </a>
+    </div>
+</div>
+
+<div class="filter-card">
+    <form method="get" class="search-form">
+        <div class="search-input-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" name="q" value="{{ query }}" class="search-input" placeholder="Ism yoki telefon bo'yicha qidirish...">
+        </div>
+        <button type="submit" class="btn-custom btn-primary-custom">Qidirish</button>
+        {% if query %}
+            <a class="btn-custom btn-secondary-custom" href="{% url 'tenant_students' tenant.category.slug tenant.id %}">
+                <i class="bi bi-x-circle"></i> Tozalash
+            </a>
+        {% endif %}
+    </form>
+</div>
+
+{% if students %}
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Ism va Familiya</th>
+                <th>Guruh</th>
+                <th>Telefon</th>
+                <th>To'lov muddati</th>
+                <th style="text-align: right;">Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>
+                    <span class="student-name">{{ student.full_name }}</span>
+                </td>
+                <td>
+                    <span style="font-weight: 500; color: #475569;">
+                        <i class="bi bi-journal-bookmark text-muted me-1"></i>{{ student.group.name|default:"-" }}
+                    </span>
+                </td>
+                <td>
+                    <span style="font-family: monospace; font-weight: 600; color: #334155;">{{ student.phone|default:"-" }}</span>
+                </td>
+                <td>
+                    {% if student.payment_due_date %}
+                        {% if student.payment_days_left < 0 %}
+                            <span class="badge-status badge-danger">
+                                <i class="bi bi-exclamation-circle-fill"></i> To'lov muddati tugadi ({{ student.payment_overdue_days }} kun avval)
+                            </span>
+                        {% elif student.payment_days_left <= 5 %}
+                            <span class="badge-status badge-warning">
+                                <i class="bi bi-clock-history"></i> To'lovga {{ student.payment_days_left }} kun qoldi
+                            </span>
+                        {% else %}
+                            <span class="badge-status badge-success">
+                                <i class="bi bi-check-circle-fill"></i> {{ student.payment_due_date|date:"d.m.Y" }} ({{ student.payment_days_left }} kun qoldi)
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge-status badge-muted">Kiritilmagan</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: right;">
+                    <a class="action-link" href="{% url 'tenant_student_detail' tenant.category.slug tenant.id student.pk %}">
+                        Ko'rish <i class="bi bi-chevron-right"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 48px; border-radius: 16px; text-align: center;">
+    <i class="bi bi-person-x" style="font-size: 48px; color: #94a3b8;"></i>
+    {% if query %}
+        <h3 style="margin-top: 12px; color: #475569; font-size: 16px;">"{{ query }}" bo'yicha hech narsa topilmadi.</h3>
+    {% else %}
+        <h3 style="margin-top: 12px; color: #475569; font-size: 16px;">Hozircha o'quvchi yo'q. Yuqoridagi tugma orqali qo'shing.</h3>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

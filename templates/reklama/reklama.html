@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBiz - Biznesingiz uchun Mukammal Tizim</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0f0d;
+            --card-bg: rgba(20, 30, 25, 0.7);
+            --accent-green: #10b981;
+            --accent-glow: #059669;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(16, 185, 129, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #a7f3d0 0%, var(--accent-green) 50%, #047857 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-blur {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(16,185,129,0.25) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(50px);
+            z-index: -1;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(10, 15, 13, 0.9) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-glow));
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 24px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.6);
+            color: #fff;
+        }
+
+        .btn-outline-custom {
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 10px 24px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-outline-custom:hover {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        /* Hero Mockup */
+        .mockup-card {
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: #111827;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Pricing Birliy Style */
+        .pricing-hero-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 78, 59, 0.35) 100%);
+            border: 2px solid var(--accent-green);
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Accordion Custom */
+        .accordion-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 12px !important;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            background: transparent;
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: none !important;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .accordion-button::after {
+            filter: invert(1);
+        }
+
+        /* Form Inputs */
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-green);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .form-select option {
+            background: #111827;
+            color: #fff;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border: 1px solid var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Blurs -->
+    <div class="gradient-blur" style="top: 5%; left: 10%;"></div>
+    <div class="gradient-blur" style="top: 35%; right: 10%;"></div>
+
+    <!-- 1. NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3 text-white d-flex align-items-center" href="#">
+                <i class="bi bi-cpu-fill text-success me-2"></i>SmartBiz<span class="gradient-text">ERP</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-4">
+                    <li class="nav-item"><a class="nav-link text-light" href="#modules">Modullar</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="#features">Afzalliklar</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="#pricing">Narxlar</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="#faq">FAQ</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom">
+                        Kirish
+                    </a>
+                    <button class="btn btn-accent" data-bs-toggle="modal" data-bs-target="#arizaModal">Ariza qoldirish</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="pt-5 mt-5 text-center position-relative">
+        <div class="container pt-5">
+            <div class="row justify-content-center" data-aos="fade-up">
+                <div class="col-lg-9">
+                    <span class="badge bg-outline-success text-success border border-success mb-3 px-3 py-2 rounded-pill">🚀 Avtomatlashtirishda yangi davr</span>
+                    <h1 class="display-3 fw-extrabold mb-4">Biznesingizni <span class="gradient-text">Bitta Ekran</span> Orqali Boshqaring</h1>
+                    <p class="lead text-danger mb-4">Qurilish, POS Mini Market, Xususiy bog'cha va boshqa bizneslar uchun moslashuvchan ekotizim.</p>
+                    <div class="mb-4">
+                        <span class="badge bg-success fs-5 px-4 py-2 rounded-pill">Oylik bor-yog'i: 79,900 so'm</span>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-accent btn-lg px-4" data-bs-toggle="modal" data-bs-target="#arizaModal">Ariza Qoldirish</button>
+                        <a href="#how" class="btn btn-outline-custom btn-lg px-4">Tizim Qanday Ishlaydi?</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Mockups -->
+            <div class="row mt-5 pt-4 align-items-center justify-content-center" data-aos="zoom-in" data-aos-delay="150">
+                <div class="col-lg-10">
+                    <div class="mockup-card p-3 glass-card">
+                        <div class="d-flex align-items-center gap-2 mb-3 px-2">
+                            <span class="badge bg-danger rounded-circle p-1"> </span>
+                            <span class="badge bg-warning rounded-circle p-1"> </span>
+                            <span class="badge bg-success rounded-circle p-1"> </span>
+                            <small class="text-muted ms-2">nexiserp.uz/dashboard</small>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="p-4 rounded border border-secondary text-start bg-dark">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h6 class="text-success"><i class="bi bi-laptop me-2"></i>ERP Cloud Panel</h6>
+                                        <span class="badge bg-success">Live Stream</span>
+                                    </div>
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6"><div class="p-2 border border-secondary rounded"><small class="text-muted">Bugungi tushum</small><h5>48,250,000 UZS</h5></div></div>
+                                        <div class="col-6"><div class="p-2 border border-secondary rounded"><small class="text-muted">Foyda</small><h5 class="text-success">+24.5%</h5></div></div>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 rounded border border-secondary mb-2 text-start bg-dark">
+                                    <h6 class="text-warning"><i class="bi bi-phone me-2"></i>Mobile App</h6>
+                                    <small class="text-muted">Bulutli moslashuv va tezkor nazorat</small>
+                                </div>
+                                <div class="p-3 rounded border border-secondary text-start bg-dark">
+                                    <h6 class="text-info"><i class="bi bi-calculator me-2"></i>POS Kassa</h6>
+                                    <small class="text-danger">Shtrix-kod & tezkor sotuvlar</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. MODULES SECTION -->
+    <section id="modules" class="py-5 my-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold fs-1">Sohangizga Mos <span class="gradient-text">Modullar</span></h2>
+                <p class="text-danger">Biznesingiz yo'nalishiga qarab moslashtiriladigan va doimiy kengayuvchi tizim</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="glass-card p-4 h-100">
+                        <i class="bi bi-building-fill-gear fs-1 text-success mb-3 d-block"></i>
+                        <h4>CRM Qurilish</h4>
+                        <p class="text-danger small mb-0">Qurilish ob'ektlari, smeta, xomashyo sarfi va pudratchilar hisob-kitobini yuritish.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4 h-100">
+                        <i class="bi bi-shop fs-1 text-success mb-3 d-block"></i>
+                        <h4>POS Mini Market</h4>
+                        <p class="text-danger small mb-0">Do'kon va mini marketlar uchun shtrix-kod, kassa va zaxiradagi mahsulotlar nazorati.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4 h-100">
+                        <i class="bi bi-backpack-fill fs-1 text-success mb-3 d-block"></i>
+                        <h4>Xususiy Bog'cha CRM</h4>
+                        <p class="text-danger small mb-0">Bolalar davomati, oylik to'lovlar, to'garaklar va ota-onalar ma'lumotlar bazasi.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="glass-card p-4 h-100">
+                        <i class="bi bi-plus-circle-dotted fs-1 text-success mb-3 d-block"></i>
+                        <h4>Yangi Modullar...</h4>
+                        <p class="text-danger small mb-0">Tizim doimiy rivojlanadi va tez orada yangi sohalar uchun modullar qo'shilib boradi!</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="glass-card p-4 h-100">
+                        <i class="bi bi-cash-coin fs-1 text-success mb-3 d-block"></i>
+                        <h4>Moliya & Analytics</h4>
+                        <p class="text-danger small mb-0">Kassa, P&L, Sof foyda va xarajatlarning grafik tahlili va aniq hisob-kitobi.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                    <div class="glass-card p-4 h-100">
+                        <i class="bi bi-robot fs-1 text-success mb-3 d-block"></i>
+                        <h4>AI Assistant & Telegram</h4>
+                        <p class="text-danger small mb-0">Sun'iy intellektli tahlillar hamda Telegram bot orqali bildirishnomalar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. ADVANTAGES -->
+    <section id="features" class="py-5 bg-dark">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold fs-1">Nima uchun <span class="gradient-text">SmartBiz</span>?</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="glass-card p-4">
+                        <i class="bi bi-cloud-arrow-up fs-2 text-info mb-2 d-block"></i>
+                        <h5>Cloud Backup</h5>
+                        <p class="text-danger small">Ma'lumotlaringiz avtomatik zaxiralanadi va bulutli serverlarda xavfsiz saqlanadi.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4">
+                        <i class="bi bi-shield-lock fs-2 text-danger mb-2 d-block"></i>
+                        <h5>Yuqori Xavfsizlik</h5>
+                        <p class="text-danger small">Bank darajasidagi shifrlash va xodimlarga huquq berish nazorati.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4">
+                        <i class="bi bi-headset fs-2 text-success mb-2 d-block"></i>
+                        <h5>24/7 Qo'llab-quvvatlash</h5>
+                        <p class="text-danger small">Mutaxassislarimiz har qanday texnik masalada doim yoningizda.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="glass-card p-4">
+                        <i class="bi bi-building fs-2 text-primary mb-2 d-block"></i>
+                        <h5>Multi-Company</h5>
+                        <p class="text-danger small">Bitta kabinet orqali bir nechta kompaniyalar va filiallarni boshqaring.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4">
+                        <i class="bi bi-translate fs-2 text-light mb-2 d-block"></i>
+                        <h5>Multi-Language</h5>
+                        <p class="text-danger small">O'zbek, Rus va Ingliz tillarida to'liq moslashgan interfeys.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4">
+                        <i class="bi bi-arrow-repeat fs-2 text-warning mb-2 d-block"></i>
+                        <h5>Doimiy Yangilanishlar</h5>
+                        <p class="text-danger small">Tizimga yangi modullar va qulayliklar doimiy ravishda qo'shib boriladi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. STATISTICS -->
+    <section class="py-5 my-5">
+        <div class="container">
+            <div class="glass-card p-5">
+                <div class="row text-center g-4">
+                    <div class="col-md-4">
+                        <h1 class="display-4 fw-bold gradient-text counter" data-target="101">0</h1>
+                        <p class="text-muted mb-0">Muvaffaqiyatli Mijozlar</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h1 class="display-4 fw-bold gradient-text counter" data-target="500000">0</h1>
+                        <p class="text-muted mb-0">Kunlik Tranzaksiyalar</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h1 class="display-4 fw-bold gradient-text">99.9%</h1>
+                        <p class="text-muted mb-0">Server Uptime (Uzluksiz)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. HOW IT WORKS -->
+    <section id="how" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold fs-1">Qanday <span class="gradient-text">Ishlaydi</span>?</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="glass-card p-4 h-100">
+                        <div class="step-number mb-3">1</div>
+                        <h5>Ariza Qoldiring</h5>
+                        <p class="text-muted small">Formani to'ldirasiz va ma'lumotlar avtomatik Telegramingizga keladi.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4 h-100">
+                        <div class="step-number mb-3">2</div>
+                        <h5>Mijoz bilan Bog'lanish</h5>
+                        <p class="text-muted small">Siz arizachi bilan shaxsan bog'lanasiz va talablarni aniqlaysiz.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4 h-100">
+                        <div class="step-number mb-3">3</div>
+                        <h5>Modulni Ulash</h5>
+                        <p class="text-muted small">Kerakli modul (Qurilish, Mini Market, Bog'cha) aktivlashtiriladi.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="glass-card p-4 h-100">
+                        <div class="step-number mb-3">4</div>
+                        <h5>Boshlash</h5>
+                        <p class="text-muted small">Oylik 79,900 so'm evaziga to'liq nazorat va boshqaruv taqdim etiladi!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. PRICING (Birliy Style) -->
+    <section id="pricing" class="py-5 my-5">
+        <div class="container">
+            <div class="pricing-hero-card p-5 text-center position-relative" data-aos="zoom-in">
+                <span class="badge bg-success mb-3 px-3 py-2">HAMYONBOP TARIF</span>
+                <h2 class="display-4 fw-bold mb-3">Atigi <span class="gradient-text">79,900 so'm</span> / oy</h2>
+                <p class="lead text-muted mb-4">Har bir biznes uchun qulay narx va professional imkoniyatlar!</p>
+                <ul class="list-unstyled d-flex flex-wrap justify-content-center gap-4 mb-4">
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>CRM Qurilish</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>POS Mini Market</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Xususiy Bog'cha CRM</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Yangi Qo'shiladigan Modullar</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>24/7 Qo'llab-quvvatlash</li>
+                </ul>
+                <button class="btn btn-accent btn-lg px-5" data-bs-toggle="modal" data-bs-target="#arizaModal">Hoziroq Ulanish</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section id="faq" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold fs-1">Ko'p Beriladigan <span class="gradient-text">Savollar</span></h2>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Oylik to'lov qancha va u nimalarni o'z ichiga oladi?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-danger">
+                                    Oylik to'lov bor-yog'i 79,900 so'm. Bu summaning ichiga tanlangan modul, bulutli server xizmati hamda 24/7 texnik qo'llab-quvvatlash kiradi.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Kelajakda boshqa modullar ham qo'shiladimi?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-danger">
+                                    Ha, tizimimizga doimiy ravishda yangi sohalar uchun modullar va funksiyalar qo'shib boriladi.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Ma'lumotlarimiz xavfsizligiga kafolat bormi?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-danger">
+                                    Albatta! Ma'lumotlar shifrlanadi, har kuni bulutga zaxiralanadi va maxfiylik kafolatlanadi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. ARIZA MODAL -->
+    <div class="modal fade" id="arizaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card p-3 border-secondary">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Ariza Qoldirish</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="telegramForm">
+                        <div class="mb-3">
+                            <label class="form-label small text-danger">Ismingiz</label>
+                            <input type="text" id="formName" class="form-control" required placeholder="Ali Valiyev">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-danger">Telefon raqam</label>
+                            <input type="tel" id="formPhone" class="form-control" required placeholder="+998 90 123 45 67">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-danger">Korxona nomi</label>
+                            <input type="text" id="formCompany" class="form-control" required placeholder="ООО Business">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small text-danger">Faoliyat turi</label>
+                                <select id="formActivity" class="form-select">
+                                    <option>Qurilish</option>
+                                    <option>POS Mini Market</option>
+                                    <option>Xususiy Bog'cha</option>
+                                    <option>Boshqa yo'nalish</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small text-danger">Xodimlar soni</label>
+                                <select id="formEmployees" class="form-select">
+                                    <option>1-5 ta</option>
+                                    <option>5-25 ta</option>
+                                    <option>50-100 ta</option>
+                                    <option>100+ ta</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-danger">Kerakli modul</label>
+                            <select id="formModule" class="form-select">
+                                <option>CRM Qurilish</option>
+                                <option>POS Mini Market</option>
+                                <option>Xususiy Bog'cha CRM</option>
+                                <option>Boshqa / Maxsus modul</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-danger">Izoh</label>
+                            <textarea id="formComment" class="form-control" rows="2" placeholder="Qo'shimcha savolingiz..."></textarea>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn btn-accent w-100 py-2">Telegram orqali yuborish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. FOOTER -->
+    <footer class="border-top border-secondary py-5 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h4 class="fw-bold"><i class="bi bi-cpu-fill text-success me-2"></i>SmartBiz</h4>
+                    <p class="text-danger small mb-0">Biznesingiz uchun qulay va zamonaviy boshqaruv ekotizimi.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-center">sizga biz kerakmiz</small>
+                    <small class="d-block text-center mt-3">
+                        <a href="mailto:xojanazarovasilbek1908@gmail.com" class="text-decoration-none me-3 text-light">
+                            <i class="bi bi-envelope-fill"></i> Gmail
+                        </a>
+
+                        <a href="https://t.me/asilbekxojanazarovv" target="_blank" class="text-decoration-none me-3 text-info">
+                            <i class="bi bi-telegram"></i> Telegram
+                        </a>
+
+                        <a href="https://instagram.com/smart_biz_aida" target="_blank" class="text-decoration-none text-warning">
+                            <i class="bi bi-instagram"></i> Instagram
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Init AOS Animations
+        document.addEventListener("DOMContentLoaded", function () {
+            AOS.init({ duration: 800, once: true });
+        });
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.counter');
+        let counterStarted = false;
+
+        window.addEventListener('scroll', () => {
+            const counterElem = document.querySelector('.counter');
+            if (!counterElem) return;
+
+            const scrollPos = window.scrollY + window.innerHeight;
+            const targetPos = counterElem.offsetTop;
+
+            if (scrollPos > targetPos && !counterStarted) {
+                counterStarted = true;
+                counters.forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    let count = 0;
+                    const speed = target / 50;
+
+                    const updateCount = () => {
+                        count += speed;
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count).toLocaleString() + "+";
+                            setTimeout(updateCount, 30);
+                        } else {
+                            counter.innerText = target.toLocaleString() + "+";
+                        }
+                    };
+                    updateCount();
+                });
+            }
+        });
+
+        // TELEGRAM BOT INTEGRATSIYASI
+        const BOT_TOKEN = "7593679646:AAE0d-6KbPnrtKlEOeB8uPdoiAAcFcE8PCM";
+        const CHAT_ID = "-1002868451206";
+
+        document.getElementById('telegramForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Yuborilmoqda...';
+
+            const name = document.getElementById('formName').value;
+            const phone = document.getElementById('formPhone').value;
+            const company = document.getElementById('formCompany').value;
+            const activity = document.getElementById('formActivity').value;
+            const employees = document.getElementById('formEmployees').value;
+            const module = document.getElementById('formModule').value;
+            const comment = document.getElementById('formComment').value;
+
+            const messageText = `🚀 *Yangi Ariza!*\n\n` +
+                `👤 *Ism:* ${name}\n` +
+                `📞 *Tel:* ${phone}\n` +
+                `🏢 *Kompaniya:* ${company}\n` +
+                `💼 *Faoliyat:* ${activity}\n` +
+                `👥 *Xodimlar:* ${employees}\n` +
+                `📦 *Modul:* ${module}\n` +
+                `💬 *Izoh:* ${comment}`;
+
+            // Telegram API'ga to'g'ridan-to'g'ri so'rov
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: messageText,
+                    parse_mode: 'Markdown'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert('Arizangiz muvaffaqiyatli yuborildi!');
+                    var modalEl = document.getElementById('arizaModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    document.getElementById('telegramForm').reset();
+                } else {
+                    alert('Xatolik yuz berdi: ' + data.description);
+                }
+            })
+            .catch(err => {
+                alert('Yuborishda xatolik yuz berdi. Internetni va bot huquqlarini tekshiring.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Telegram orqali yuborish';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "start/base.html" %}
+{% block title %}Ochirishni tasdiqlash{% endblock %}
+
+{% block content %}
+<h1>Mahsulotni ochirishni tasdiqlaysizmi?</h1>
+<p>"{{ product.name }}" rostdan ham ochirilsinmi?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background:#dc2626; margin-top:12px;">Ha, ochirish</button>
+</form>
+<p style="margin-top:12px;"><a href="{% url 'qur_product_list' tenant.category.slug tenant.id category_id %}">Bekor qilish</a></p>
+{% endblock %}

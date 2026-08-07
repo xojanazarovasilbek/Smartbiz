@@ -1,0 +1,53 @@
+{% extends "start/base.html" %}
+{% block title %}Oshpaz hisoboti{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+<h1>🍲 Oshpaz hisoboti</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Sana
+        <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required>
+    </label>
+    <label>Ovqat turi
+        <select name="meal_type">
+            <option value="breakfast">Nonushta</option>
+            <option value="lunch">Tushlik</option>
+            <option value="snack">Poldnik</option>
+            <option value="dinner">Kechki ovqat</option>
+        </select>
+    </label>
+    <label>Necha porsiya tayyorlandi
+        <input type="number" name="portions_count" required>
+    </label>
+    <label>Izoh
+        <input type="text" name="note">
+    </label>
+    <button type="submit" style="margin-top:16px;">Saqlash</button>
+</form>
+
+<h2 style="margin-top:24px; font-size:16px;">Oxirgi yozuvlar</h2>
+{% if recent %}
+<table>
+    <tr><th>Sana</th><th>Ovqat turi</th><th>Porsiya</th><th>Izoh</th><th>Holati</th></tr>
+    {% for m in recent %}
+    <tr>
+        <td>{{ m.date|date:"d.m.Y" }}</td>
+        <td>{{ m.get_meal_type_display }}</td>
+        <td>{{ m.portions_count }}</td>
+        <td>{{ m.note|default:"-" }}</td>
+        <td>
+            {% if m.confirmed %}
+                <span style="color:#16a34a;">✅ Tasdiqlandi</span>
+            {% else %}
+                <span style="color:#d97706;">⏳ Kutilmoqda</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Hozircha yozuv yoq.</p>
+{% endif %}
+{% endblock %}

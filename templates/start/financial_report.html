@@ -1,0 +1,68 @@
+{% extends "start/base.html" %}
+{% block title %}Moliyaviy hisobot{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+<h1>💰 Moliyaviy hisobot</h1>
+
+<form method="get" style="display:flex; gap:10px; align-items:end; flex-wrap:wrap; margin-top:10px;">
+    <label>Boshlanish
+        <input type="date" name="start" value="{{ start_date|date:'Y-m-d' }}">
+    </label>
+    <label>Tugash
+        <input type="date" name="end" value="{{ end_date|date:'Y-m-d' }}">
+    </label>
+    <button type="submit">Filtrlash</button>
+</form>
+
+<div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:140px; background:#16a34a; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ total_income }}</div>
+        <div style="font-size:13px;">Daromad</div>
+    </div>
+    <div style="flex:1; min-width:140px; background:#dc2626; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ total_expense }}</div>
+        <div style="font-size:13px;">Xarajat</div>
+    </div>
+    <div style="flex:1; min-width:140px; background:#2563eb; color:#fff; border-radius:8px; padding:16px; text-align:center;">
+        <div style="font-size:20px; font-weight:bold;">{{ net_profit }}</div>
+        <div style="font-size:13px;">Foyda</div>
+    </div>
+</div>
+
+<a class="button" href="{% url 'add_expense' tenant.category.slug tenant.id %}" style="margin-top:16px; display:inline-block;">+ Xarajat qoshish</a>
+
+<h2 style="margin-top:24px; font-size:16px;">Daromad (tolangan tolovlar)</h2>
+{% if payments %}
+<table>
+    <tr><th>O'quvchi</th><th>Oy</th><th>Tolangan sana</th><th>Summa</th></tr>
+    {% for p in payments %}
+    <tr>
+        <td>{{ p.student.full_name }}</td>
+        <td>{{ p.month|date:"Y-m" }}</td>
+        <td>{{ p.paid_date|date:"d.m.Y" }}</td>
+        <td>{{ p.amount|default:"-" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Bu davrda daromad yoq.</p>
+{% endif %}
+
+<h2 style="margin-top:24px; font-size:16px;">Xarajatlar</h2>
+{% if expenses %}
+<table>
+    <tr><th>Nomi</th><th>Turi</th><th>Sana</th><th>Summa</th></tr>
+    {% for e in expenses %}
+    <tr>
+        <td>{{ e.title }}</td>
+        <td>{{ e.get_expense_type_display }}</td>
+        <td>{{ e.date|date:"d.m.Y" }}</td>
+        <td>{{ e.amount }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Bu davrda xarajat yoq.</p>
+{% endif %}
+{% endblock %}

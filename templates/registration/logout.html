@@ -1,0 +1,35 @@
+{% extends "start/base.html" %}
+
+{% block title %}Chiqish{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:center;align-items:center;min-height:80vh;">
+    <div style="max-width:450px;width:100%;background:#fff;padding:40px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,.1);text-align:center;">
+
+        <div style="font-size:70px;">👋</div>
+
+        <h2>Hisobdan chiqish</h2>
+
+        <p style="color:#666;margin:20px 0;">
+            Rostdan ham hisobingizdan chiqmoqchimisiz?
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <button type="submit"
+                    style="width:100%;padding:12px;background:#dc3545;color:white;
+                           border:none;border-radius:8px;font-size:16px;cursor:pointer;">
+                Chiqish
+            </button>
+        </form>
+
+        <a href="{% url 'home' %}"
+           style="display:block;margin-top:15px;text-decoration:none;
+                  background:#0d6efd;color:white;padding:12px;border-radius:8px;">
+            Bekor qilish
+        </a>
+
+    </div>
+</div>
+{% endblock %}

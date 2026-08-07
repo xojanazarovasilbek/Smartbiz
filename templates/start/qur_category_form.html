@@ -1,0 +1,16 @@
+{% extends "start/base.html" %}
+{% block title %}Yangi kategoriya{% endblock %}
+
+{% block content %}
+<h1>Yangi mahsulot kategoriyasi</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Nomi
+        <input type="text" name="name" required placeholder="Masalan: Ichimliklar">
+    </label>
+    <button type="submit" style="margin-top:16px;">Saqlash</button>
+</form>
+
+<p style="margin-top:16px;"><a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}">&larr; Kategoriyalarga qaytish</a></p>
+{% endblock %}

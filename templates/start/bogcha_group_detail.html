@@ -1,0 +1,31 @@
+{% extends "start/base.html" %}
+{% block title %}{{ group.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ group.name }}</h1>
+<p><strong>Tarbiyachi:</strong> {{ group.tarbiyachi.full_name|default:"-" }}</p>
+<p><strong>Yosh oralig'i:</strong> {{ group.min_age }} - {{ group.max_age }} yosh</p>
+
+<div style="margin-top:12px; display:flex; gap:10px;">
+    <a class="button" href="{% url 'bogcha_group_edit' tenant.category.slug tenant.id group.pk %}">Tahrirlash</a>
+    <a class="button" style="background:#dc2626;" href="{% url 'bogcha_group_delete' tenant.category.slug tenant.id group.pk %}">Ochirish</a>
+</div>
+
+<h2 style="margin-top:24px; font-size:16px;">Guruhdagi bolalar ({{ children|length }})</h2>
+{% if children %}
+<table>
+    <tr><th>Ism</th><th>Yoshi</th><th></th></tr>
+    {% for c in children %}
+    <tr>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.age_years }}</td>
+        <td><a href="{% url 'child_detail' tenant.category.slug tenant.id c.pk %}">Korish</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Bu guruhda hali bola yoq.</p>
+{% endif %}
+
+<p style="margin-top:16px;"><a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}">&larr; Royxatga qaytish</a></p>
+{% endblock %}

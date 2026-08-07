@@ -1,0 +1,10 @@
+{% extends "start/base.html" %}
+{% block content %}
+<h1>📜 Amallar tarixi</h1>
+<table>
+    <tr><th>Vaqt</th><th>Foydalanuvchi</th><th>Amal</th></tr>
+    {% for l in logs %}
+    <tr><td>{{ l.created_at|date:"d.m.Y H:i" }}</td><td>{{ l.user.username }}</td><td>{{ l.action }}</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

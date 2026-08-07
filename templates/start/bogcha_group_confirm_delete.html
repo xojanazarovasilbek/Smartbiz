@@ -1,0 +1,13 @@
+{% extends "start/base.html" %}
+{% block title %}Ochirishni tasdiqlash{% endblock %}
+
+{% block content %}
+<h1>Guruhni ochirishni tasdiqlaysizmi?</h1>
+<p>"{{ group.name }}" rostdan ham ochirilsinmi? Bu guruhdagi bolalar ochirilmaydi, faqat guruhsiz qoladi.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background:#dc2626; margin-top:12px;">Ha, ochirish</button>
+</form>
+<p style="margin-top:12px;"><a href="{% url 'bogcha_group_detail' tenant.category.slug tenant.id group.pk %}">Bekor qilish</a></p>
+{% endblock %}

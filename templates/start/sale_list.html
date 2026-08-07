@@ -1,0 +1,327 @@
+{% extends "start/base.html" %}
+{% block title %}Sotuvlar tarixi &mdash; {{ tenant.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* FILTER TOOLBAR */
+    .filter-toolbar {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+    }
+
+    .date-input {
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #0f172a;
+        outline: none;
+        background-color: #ffffff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .date-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* BUTTONS */
+    .btn-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+
+    .btn-secondary-custom {
+        background: #f8fafc;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .btn-today-custom {
+        background: #16a34a;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+    }
+
+    .btn-today-custom:hover {
+        background: #15803d;
+        color: #ffffff;
+    }
+
+    .btn-excel-custom {
+        background: #059669;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        margin-left: auto;
+    }
+
+    .btn-excel-custom:hover {
+        background: #047857;
+        color: #ffffff;
+    }
+
+    /* DAILY SUMMARY BANNER */
+    .summary-banner {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .summary-date {
+        font-size: 15px;
+        font-weight: 700;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .summary-total {
+        font-size: 16px;
+        color: #475569;
+    }
+
+    .summary-total strong {
+        font-size: 18px;
+        color: #2563eb;
+        font-weight: 800;
+    }
+
+    /* DATA TABLE */
+    .table-container {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .custom-table th {
+        background: #f8fafc;
+        padding: 14px 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .custom-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-table tr:hover td {
+        background: #f8fafc;
+    }
+
+    .payment-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid #bfdbfe;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-link:hover {
+        color: #1d4ed8;
+    }
+</style>
+
+<div>
+    <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Dashboardga qaytish
+    </a>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-clock-history text-primary"></i> Sotuvlar tarixi
+        </h1>
+        <a class="btn-custom btn-primary-custom" href="{% url 'sale_category_list' tenant.category.slug tenant.id %}">
+            <i class="bi bi-plus-lg"></i> + Yangi sotuv
+        </a>
+    </div>
+</div>
+
+<div class="filter-toolbar">
+    <a class="btn-custom btn-secondary-custom" href="?date={{ prev_date|date:'Y-m-d' }}">
+        <i class="bi bi-chevron-left"></i> Oldingi kun
+    </a>
+
+    <form method="get" style="display:inline;">
+        <input type="date" name="date" class="date-input" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit()">
+    </form>
+
+    <a class="btn-custom btn-secondary-custom" href="?date={{ next_date|date:'Y-m-d' }}">
+        Keyingi kun <i class="bi bi-chevron-right"></i>
+    </a>
+
+    <a class="btn-custom btn-today-custom" href="?date={{ today|date:'Y-m-d' }}">
+        <i class="bi bi-calendar-event"></i> Bugun
+    </a>
+
+    <a class="btn-custom btn-excel-custom" href="{% url 'sale_export' tenant.category.slug tenant.id %}?date={{ selected_date|date:'Y-m-d' }}">
+        <i class="bi bi-file-earmark-excel-fill"></i> Excel eksport
+    </a>
+</div>
+
+<div class="summary-banner">
+    <span class="summary-date">
+        <i class="bi bi-calendar3 text-primary"></i> {{ selected_date|date:"d.m.Y" }} sanasidagi sotuvlar
+    </span>
+    <span class="summary-total">
+        Kunlik jami: <strong>{{ day_total }} so'm</strong>
+    </span>
+</div>
+
+{% if day_sales %}
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th># Chek ID</th>
+                <th>Vaqt</th>
+                <th>To'lov turi</th>
+                <th>Summa</th>
+                <th style="text-align: right;">Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in day_sales %}
+            <tr>
+                <td>
+                    <span style="font-weight: 700; color: #0f172a;">#{{ s.id }}</span>
+                </td>
+                <td>
+                    <span style="font-weight: 600; color: #475569;">
+                        <i class="bi bi-clock me-1 text-muted"></i> {{ s.created_at|date:"H:i" }}
+                    </span>
+                </td>
+                <td>
+                    <span class="payment-badge">
+                        <i class="bi bi-credit-card"></i> {{ s.get_payment_method_display }}
+                    </span>
+                </td>
+                <td>
+                    <span style="font-weight: 700; color: #0f172a;">{{ s.total_amount }} so'm</span>
+                </td>
+                <td style="text-align: right;">
+                    <a class="action-link" href="{% url 'sale_detail' tenant.category.slug tenant.id s.pk %}">
+                        Ko'rish <i class="bi bi-chevron-right"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 48px; border-radius: 16px; text-align: center;">
+    <i class="bi bi-receipt-cutoff" style="font-size: 48px; color: #94a3b8;"></i>
+    <h3 style="margin-top: 12px; color: #475569; font-size: 16px;">Bu kunda hech qanday sotuv bo'lmagan.</h3>
+</div>
+{% endif %}
+
+{% endblock %}

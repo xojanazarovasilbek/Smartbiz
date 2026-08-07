@@ -1,0 +1,236 @@
+{% extends "start/base.html" %}
+{% block title %}{{ teacher.full_name }} &mdash; {{ tenant.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* ACTION BUTTONS */
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .btn-warning-custom {
+        background: #f59e0b;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-warning-custom:hover {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    .btn-danger-custom {
+        background: #dc2626;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-danger-custom:hover {
+        background: #b91c1c;
+        color: #ffffff;
+    }
+
+    /* PROFILE & GROUPS GRID */
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .info-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .profile-card {
+        border-left: 5px solid #2563eb;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #f1f5f9;
+        font-size: 14px;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-value {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* GROUPS LIST */
+    .groups-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .group-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .group-item i {
+        color: #2563eb;
+    }
+
+    /* FOOTER ACTIONS */
+    .footer-actions {
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid #e2e8f0;
+    }
+</style>
+
+<div>
+    <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Ro'yxatga qaytish
+    </a>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-person-badge text-primary"></i> {{ teacher.full_name }}
+        </h1>
+        <div class="header-actions">
+            <a class="btn-custom btn-warning-custom" href="{% url 'teacher_edit' tenant.category.slug tenant.id teacher.pk %}">
+                <i class="bi bi-pencil-square"></i> Tahrirlash
+            </a>
+            <a class="btn-custom btn-danger-custom" href="{% url 'teacher_delete' tenant.category.slug tenant.id teacher.pk %}">
+                <i class="bi bi-trash3-fill"></i> O'chirish
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="details-grid">
+    <div class="info-card profile-card">
+        <h2 class="section-title">
+            <i class="bi bi-person-vcard text-primary"></i> O'qituvchi ma'lumotlari
+        </h2>
+        <div class="info-item">
+            <span class="info-label"><i class="bi bi-book text-muted"></i> Fan:</span>
+            <span class="info-value">{{ teacher.subject|default:"-" }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label"><i class="bi bi-telephone text-muted"></i> Telefon:</span>
+            <span class="info-value" style="font-family: monospace;">{{ teacher.phone|default:"-" }}</span>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h2 class="section-title">
+            <i class="bi bi-journal-bookmark text-primary"></i> Biriktirilgan guruhlar
+        </h2>
+        {% if groups %}
+            <ul class="groups-list">
+                {% for g in groups %}
+                    <li class="group-item">
+                        <i class="bi bi-folder2-open"></i> {{ g.name }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                <i class="bi bi-inbox" style="font-size: 32px;"></i>
+                <p style="margin-top: 8px; font-size: 14px;">Hozircha guruh biriktirilmagan.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="footer-actions">
+    <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Ro'yxatga qaytish
+    </a>
+</div>
+
+{% endblock %}

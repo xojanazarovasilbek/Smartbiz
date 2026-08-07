@@ -1,0 +1,57 @@
+{% extends "start/base.html" %}
+{% block title %}{% if child %}Bolani tahrirlash{% else %}Yangi bola{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if child %}Bolani tahrirlash{% else %}Yangi bola qoshish{% endif %}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Ism-familiya
+        <input type="text" name="full_name" value="{{ child.full_name|default:'' }}" required>
+    </label>
+    <label>Rasmi
+        <input type="file" name="photo" accept="image/*">
+    </label>
+    <label>Guvohnoma / ID / pasport raqami
+        <input type="text" name="id_document" value="{{ child.id_document|default:'' }}">
+    </label>
+    <label>Tugilgan sanasi
+        <input type="date" name="birth_date" value="{{ child.birth_date|date:'Y-m-d'|default:'' }}" required>
+    </label>
+    <label>Guruh (bosh qoldirilsa, yoshiga qarab avtomatik tanlanadi)
+        <select name="group">
+            <option value="">-- avtomatik --</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}" {% if child and child.group_id == g.id %}selected{% endif %}>{{ g.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label style="margin-top:14px;">Ota ismi
+        <input type="text" name="father_name" value="{{ child.father_name|default:'' }}">
+    </label>
+    <label>Otaning ID/pasport raqami
+        <input type="text" name="father_id" value="{{ child.father_id|default:'' }}">
+    </label>
+    <label>Ona ismi
+        <input type="text" name="mother_name" value="{{ child.mother_name|default:'' }}">
+    </label>
+    <label>Onaning ID/pasport raqami
+        <input type="text" name="mother_id" value="{{ child.mother_id|default:'' }}">
+    </label>
+    <label>Aloqa telefoni
+        <input type="text" name="phone" value="{{ child.phone|default:'' }}">
+    </label>
+
+    <label style="margin-top:14px;">Sog'lig'i (allergiya, surunkali kasallik va h.k.)
+        <textarea name="health_condition" rows="3">{{ child.health_condition|default:'' }}</textarea>
+    </label>
+    <label>Izoh
+        <textarea name="note" rows="2">{{ child.note|default:'' }}</textarea>
+    </label>
+
+    <button type="submit" style="margin-top:16px;">Saqlash</button>
+</form>
+
+<p style="margin-top:16px;"><a href="{% url 'child_list' tenant.category.slug tenant.id %}">&larr; Royxatga qaytish</a></p>
+{% endblock %}

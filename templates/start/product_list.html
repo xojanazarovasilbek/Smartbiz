@@ -1,0 +1,271 @@
+{% extends "start/base.html" %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Kategoriyasiz mahsulotlar{% endif %} &mdash; {{ tenant.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* ALERT BANNER */
+    .alert-banner {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 24px;
+        color: #d97706;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* BUTTONS */
+    .btn-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+
+    /* DATA TABLE */
+    .table-container {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .custom-table th {
+        background: #f8fafc;
+        padding: 14px 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .custom-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-table tr:hover td {
+        background: #f8fafc;
+    }
+
+    .row-low-stock {
+        background-color: #fef2f2 !important;
+    }
+
+    .row-low-stock:hover td {
+        background-color: #fee2e2 !important;
+    }
+
+    .product-name {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .unit-badge {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .low-stock-warning {
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 700;
+        margin-left: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-links {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .action-link-edit {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .action-link-edit:hover {
+        color: #1d4ed8;
+    }
+
+    .action-link-delete {
+        color: #dc2626;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .action-link-delete:hover {
+        color: #b91c1c;
+    }
+</style>
+
+<div>
+    <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Kategoriyalarga qaytish
+    </a>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-box-seam text-primary"></i> 
+            {% if category %}{{ category.name }}{% else %}Kategoriyasiz mahsulotlar{% endif %}
+        </h1>
+        <a class="btn-custom btn-primary-custom" href="{% url 'product_create' tenant.category.slug tenant.id category_id %}">
+            <i class="bi bi-plus-lg"></i> + Yangi mahsulot
+        </a>
+    </div>
+</div>
+
+{% if archived %}
+<div class="alert-banner">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size: 18px;"></i>
+    <span>Bu mahsulot avval sotilgan, shuning uchun butunlay o'chirilmadi — nofaol qilib yashirildi.</span>
+</div>
+{% endif %}
+
+{% if products %}
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Nomi</th>
+                <th>Narxi</th>
+                <th>Chegirma</th>
+                <th>Birlik</th>
+                <th>Qoldiq</th>
+                <th style="text-align: right;">Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in products %}
+            <tr class="{% if p.is_low_stock %}row-low-stock{% endif %}">
+                <td>
+                    <span class="product-name">{{ p.name }}</span>
+                </td>
+                <td>
+                    <span style="font-weight: 700; color: #0f172a;">{{ p.price }} so'm</span>
+                </td>
+                <td>
+                    {% if p.discount_price %}
+                        <span style="color: #16a34a; font-weight: 600;">{{ p.discount_price }} so'm</span>
+                    {% else %}
+                        <span style="color: #94a3b8;">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="unit-badge">{{ p.get_unit_display }}</span>
+                </td>
+                <td>
+                    <span style="font-weight: 700; color: #0f172a;">{{ p.quantity }}</span>
+                    {% if p.is_low_stock %}
+                        <span class="low-stock-warning">
+                            <i class="bi bi-exclamation-circle-fill"></i> (kam qoldi!)
+                        </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-links">
+                        <a href="{% url 'product_edit' tenant.category.slug tenant.id category_id p.pk %}" class="action-link-edit">
+                            <i class="bi bi-pencil-square"></i> Tahrirlash
+                        </a>
+                        <span style="color: #cbd5e1;">|</span>
+                        <a href="{% url 'product_delete' tenant.category.slug tenant.id category_id p.pk %}" class="action-link-delete">
+                            <i class="bi bi-trash3-fill"></i> O'chirish
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 48px; border-radius: 16px; text-align: center;">
+    <i class="bi bi-inbox" style="font-size: 48px; color: #94a3b8;"></i>
+    <h3 style="margin-top: 12px; color: #475569; font-size: 16px;">Hozircha mahsulot yo'q. Yuqoridagi tugma orqali qo'shing.</h3>
+</div>
+{% endif %}
+
+{% endblock %}

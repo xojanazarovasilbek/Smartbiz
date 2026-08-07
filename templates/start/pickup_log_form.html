@@ -1,0 +1,26 @@
+{% extends "start/base.html" %}
+{% block title %}Topshirish{% endblock %}
+
+{% block content %}
+<h1>🚶 {{ child.full_name }} &mdash; topshirish</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Kim olib ketmoqda (ism)
+        <input type="text" name="picked_up_by_name" required>
+    </label>
+    <label>Kimligi
+        <select name="relation">
+            <option value="father">Ota</option>
+            <option value="mother">Ona</option>
+            <option value="other">Boshqa</option>
+        </select>
+    </label>
+    <label>Vaqti
+        <input type="time" name="time">
+    </label>
+    <button type="submit" style="margin-top:16px;">Saqlash</button>
+</form>
+
+<p style="margin-top:16px;"><a href="{% url 'child_detail' tenant.category.slug tenant.id child.pk %}">&larr; Bola sahifasiga qaytish</a></p>
+{% endblock %}

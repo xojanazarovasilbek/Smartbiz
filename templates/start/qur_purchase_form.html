@@ -1,0 +1,35 @@
+{% extends "start/base.html" %}
+{% block title %}Xarid (kirim){% endblock %}
+
+{% block content %}
+<h1>📦 Xarid (mahsulot kirimi)</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Mahsulot
+        <select name="product" required>
+            {% for p in products %}
+            <option value="{{ p.id }}">{{ p.name }} (joriy: {{ p.quantity }})</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Yetkazib beruvchi
+        <input type="text" name="supplier">
+    </label>
+    <label>Miqdor
+        <input type="number" name="quantity" required min="1">
+    </label>
+    <label>Birlik narxi (tannarx, ixtiyoriy)
+        <input type="number" name="unit_cost">
+    </label>
+    <label>Sana
+        <input type="date" name="date">
+    </label>
+    <label>Izoh
+        <input type="text" name="note">
+    </label>
+    <button type="submit" style="margin-top:16px;">Saqlash</button>
+</form>
+
+<p style="margin-top:16px;"><a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}">&larr; Mahsulotlarga qaytish</a></p>
+{% endblock %}

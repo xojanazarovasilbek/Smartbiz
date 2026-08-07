@@ -1,0 +1,81 @@
+{% extends "start/base.html" %}
+{% block title %}Davomat hisoboti{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+
+<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <h1 style="margin:0;">📊 Davomat hisoboti</h1>
+    <div style="display:flex; gap:8px; align-items:center;">
+        <a class="button" href="?date={{ prev_date|date:'Y-m-d' }}">&#9664; Kecha</a>
+        <form method="get" style="display:inline;">
+            <input type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit()">
+        </form>
+        <a class="button" href="?date={{ next_date|date:'Y-m-d' }}">Ertaga &#9654;</a>
+        <a class="button" style="background:#16a34a;" href="?date={{ today|date:'Y-m-d' }}">Bugun</a>
+    </div>
+</div>
+
+<p class="empty">📅 Korsatilayotgan sana: <strong>{{ selected_date|date:"d.m.Y" }}</strong></p>
+
+<div style="display:flex; gap:16px; margin-top:16px; flex-wrap:wrap;">
+
+    <div style="flex:1; min-width:280px; border-top:3px solid #dc2626; border-radius:8px; box-shadow:0 0 0 1px #eee; padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#dc2626;">🔴 Kelmaganlar</strong>
+            <span style="background:#dc2626; color:#fff; border-radius:999px; padding:2px 10px; font-size:12px;">{{ absent|length }}</span>
+        </div>
+        {% for a in absent %}
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f1f1; padding:8px 0;">
+            <div>
+                <div style="font-weight:600;">{{ a.student.full_name }}</div>
+                <div style="font-size:12px; color:#777;">{{ a.student.group.name|default:"-" }} &middot; {{ a.get_status_display }}</div>
+            </div>
+            {% if a.is_editable %}
+            <a class="button" href="{% url 'attendance_quick_edit' tenant.category.slug tenant.id a.student.id %}?date={{ selected_date|date:'Y-m-d' }}">O'zgartirish</a>
+            {% else %}
+            <span style="color:#999; font-size:12px;">🔒 Bloklangan</span>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="empty">Bu kunda kelmaganlar yoq.</p>
+        {% endfor %}
+    </div>
+
+    <div style="flex:1; min-width:280px; border-top:3px solid #16a34a; border-radius:8px; box-shadow:0 0 0 1px #eee; padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#16a34a;">🟢 Kelganlar</strong>
+            <span style="background:#16a34a; color:#fff; border-radius:999px; padding:2px 10px; font-size:12px;">{{ present|length }}</span>
+        </div>
+        {% for a in present %}
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f1f1; padding:8px 0;">
+            <div>
+                <div style="font-weight:600;">{{ a.student.full_name }}</div>
+                <div style="font-size:12px; color:#777;">{{ a.student.group.name|default:"-" }}</div>
+            </div>
+            {% if a.is_editable %}
+            <a class="button" href="{% url 'attendance_quick_edit' tenant.category.slug tenant.id a.student.id %}?date={{ selected_date|date:'Y-m-d' }}">O'zgartirish</a>
+            {% else %}
+            <span style="color:#999; font-size:12px;">🔒 Bloklangan</span>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="empty">Bu kunda kelganlar yoq.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% if unmarked %}
+<div style="margin-top:16px; border:1px solid #eee; border-radius:8px; padding:14px; opacity:0.85;">
+    <strong>⚪ Belgilanmagan ({{ unmarked|length }})</strong>
+    <p class="empty">Bu oquvchilar uchun {{ selected_date|date:"d.m.Y" }} kuni davomat hali kiritilmagan.</p>
+    {% for s in unmarked %}
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f1f1; padding:8px 0;">
+        <div>{{ s.full_name }} <span style="font-size:12px; color:#777;">({{ s.group.name|default:"guruhsiz" }})</span></div>
+        <a class="button" href="{% url 'attendance_quick_edit' tenant.category.slug tenant.id s.id %}?date={{ selected_date|date:'Y-m-d' }}">Belgilash</a>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

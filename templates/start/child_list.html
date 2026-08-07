@@ -1,0 +1,31 @@
+{% extends "start/base.html" %}
+{% block title %}Bolalar{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+<h1>👶 Bolalar</h1>
+
+<a class="button" href="{% url 'child_create' tenant.category.slug tenant.id %}">+ Yangi bola</a>
+
+<form method="get" style="display:flex; gap:8px; margin-top:14px;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Ism yoki telefon boyicha qidirish..." style="flex:1; max-width:320px;">
+    <button type="submit">Qidirish</button>
+</form>
+
+{% if children %}
+<table>
+    <tr><th>Ism</th><th>Guruh</th><th>Yoshi</th><th>Ota-ona telefoni</th><th></th></tr>
+    {% for c in children %}
+    <tr>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.group.name|default:"-" }}</td>
+        <td>{{ c.age_years }}</td>
+        <td>{{ c.phone|default:"-" }}</td>
+        <td><a href="{% url 'child_detail' tenant.category.slug tenant.id c.pk %}">Korish</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">Hozircha bola yoq.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "start/base.html" %}
+{% block title %}{% if teacher %}Ustozni tahrirlash{% else %}Yangi ustoz{% endif %} &mdash; {{ tenant.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* PAGE HEADER */
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #1d4ed8;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* FORM CARD */
+    .form-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 640px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-label .required-star {
+        color: #dc2626;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #0f172a;
+        background-color: #ffffff;
+        outline: none;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* BUTTONS */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-submit {
+        background: #2563eb;
+        color: #ffffff;
+        border: none;
+        padding: 11px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    .btn-cancel {
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        padding: 11px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+</style>
+
+<div>
+    <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Ro'yxatga qaytish
+    </a>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-person-workspace text-primary"></i> 
+            {{ tenant.name }} &mdash; {% if teacher %}Ustozni tahrirlash{% else %}Yangi ustoz qo'shish{% endif %}
+        </h1>
+    </div>
+</div>
+
+<div class="form-card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-person text-muted"></i> Ism-familiya <span class="required-star">*</span>
+            </label>
+            <input type="text" name="full_name" class="form-control" value="{{ teacher.full_name|default:'' }}" placeholder="Masalan: Aziz Rahimov" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-book text-muted"></i> Fan
+            </label>
+            <input type="text" name="subject" class="form-control" value="{{ teacher.subject|default:'' }}" placeholder="Masalan: Ingliz tili">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-telephone text-muted"></i> Telefon raqami
+            </label>
+            <input type="text" name="phone" class="form-control" value="{{ teacher.phone|default:'' }}" placeholder="+998 90 123 45 67">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-check-lg"></i> Saqlash
+            </button>
+            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="btn-cancel">
+                Bekor qilish
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "start/base.html" %}
+{% block title %}Mahsulot kategoriyalari{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}">&larr; Dashboardga qaytish</a></p>
+<h1>📦 Mahsulot kategoriyalari</h1>
+
+<a class="button" href="{% url 'qur_category_create' tenant.category.slug tenant.id %}">+ Yangi kategoriya</a>
+
+{% for c in categories %}
+<a href="{% url 'qur_product_list' tenant.category.slug tenant.id c.id %}" style="text-decoration:none; color:inherit;">
+    <div style="border:1px solid #ddd; border-radius:8px; padding:14px; margin-top:12px; display:flex; justify-content:space-between;">
+        <strong>{{ c.name }}</strong>
+        <span style="color:#777;">{{ c.count }} ta mahsulot &rarr;</span>
+    </div>
+</a>
+{% empty %}
+<p class="empty">Hozircha kategoriya yoq.</p>
+{% endfor %}
+
+<a href="{% url 'qur_product_list' tenant.category.slug tenant.id 0 %}" style="text-decoration:none; color:inherit;">
+    <div style="border:1px dashed #ccc; border-radius:8px; padding:14px; margin-top:12px; display:flex; justify-content:space-between;">
+        <strong>Kategoriyasiz mahsulotlar</strong>
+        <span style="color:#777;">{{ uncategorized_count }} ta &rarr;</span>
+    </div>
+</a>
+{% endblock %}

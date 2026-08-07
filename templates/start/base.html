@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartBiz{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg-main: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            color: #334155;
+            background-color: var(--bg-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .brand {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--text-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary-light);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+            letter-spacing: -0.02em;
+        }
+
+        .navbar .brand i { color: var(--primary); font-size: 18px; }
+
+        .nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+
+        .nav-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 13.5px;
+            font-weight: 600;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item i { font-size: 15px; color: #64748b; transition: color 0.2s ease; }
+        .nav-item:hover { color: var(--primary); background: var(--primary-light); border-color: #bfdbfe; transform: translateY(-1px); }
+        .nav-item:hover i { color: var(--primary); }
+
+        .navbar .right { display: flex; align-items: center; gap: 12px; }
+
+        .user-badge {
+            font-size: 13px;
+            color: var(--text-dark);
+            font-weight: 600;
+            background: #ffffff;
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .user-badge i { color: var(--primary); font-size: 15px; }
+
+        /* QOSHIMCHA: bildirishnoma (notification) belgisi */
+        .notif-badge {
+            background: #dc2626;
+            color: #fff;
+            padding: 6px 13px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+        }
+        .notif-badge i { font-size: 13px; }
+
+        .navbar .logout {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid #fecaca;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar .logout:hover {
+            background: #dc2626;
+            color: #ffffff;
+            border-color: #dc2626;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .container { max-width: 1320px; margin: 32px auto; padding: 0 24px; }
+
+        .card-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        h1, h2, h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+            margin-bottom: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 16px;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: left;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td { padding: 14px 18px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+
+        a.button, button:not(.logout) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        a.button:hover, button:not(.logout):hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 11px 16px;
+            margin-top: 6px;
+            box-sizing: border-box;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .empty { color: var(--text-muted); margin-top: 16px; }
+    </style>
+</head>
+<body>
+    {% if tenant %}
+    <div class="navbar">
+        <div class="nav-links">
+            <span class="brand"><i class="bi bi-building-gear"></i> {{ tenant.name }}</span>
+
+            {% if tenant.category.module_type == "pos" %}
+                <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-box-seam-fill"></i> Mahsulotlar</a>
+                <a href="{% url 'sale_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-cart-fill"></i> Sotuv</a>
+                <a href="{% url 'sale_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-receipt-cutoff"></i> Sotuvlar tarixi</a>
+                <a href="{% url 'pos_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-bar-chart-line-fill"></i> Hisobotlar</a>
+                {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
+                <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-people-fill"></i> Xodimlar</a>
+                {% endif %}
+
+            {% elif tenant.category.module_type == "qur" %}
+                <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                <a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-bricks"></i> Mahsulotlar</a>
+                <a href="{% url 'qur_sale_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-cart-check-fill"></i> Sotuv</a>
+                <a href="{% url 'qur_sale_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-journal-text"></i> Sotuvlar tarixi</a>
+                <a href="{% url 'qur_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-graph-up-arrow"></i> Hisobotlar</a>
+                {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
+                <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-people-fill"></i> Xodimlar</a>
+                {% endif %}
+
+            {% elif tenant.category.module_type == "bogcha" %}
+                <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                <a href="{% url 'child_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-emoji-smile-fill"></i> Bolalar</a>
+                <a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-book-half"></i> Guruhlar</a>
+                <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-person-badge-fill"></i> Tarbiyachilar</a>
+                <a href="{% url 'meal_log_create' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-egg-fried"></i> Oshpaz</a>
+                {% if user.is_superuser or user.is_super_admin or user.role == "admin" or user.role == "director" %}
+                <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-people-fill"></i> Xodimlar</a>
+                {% endif %}
+
+            {% else %}
+                <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                <a href="{% url 'tenant_students' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-mortarboard-fill"></i> O'quvchilar</a>
+                <a href="{% url 'group_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-journal-bookmark-fill"></i> Guruhlar</a>
+                <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-person-workspace"></i> Ustozlar</a>
+                <a href="{% url 'attendance_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-calendar-check-fill"></i> Davomat hisoboti</a>
+                <a href="{% url 'financial_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-pie-chart-fill"></i> Hisobotlar</a>
+                <a href="{% url 'schedule_view' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-calendar-week-fill"></i> Dars jadvali</a>
+            {% endif %}
+        </div>
+
+        <div class="right">
+            {% if tenant and user.is_superuser or user.is_super_admin %}
+            <a href="{% url 'category_tenants' tenant.category.slug %}" style="font-size:13px; text-decoration:none; color:var(--primary); font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-arrow-left-circle-fill"></i> Tenantlarga qaytish
+            </a>
+            {% endif %}
+
+            {% if notif_count %}
+            <span class="notif-badge"><i class="bi bi-bell-fill"></i> {{ notif_count }}</span>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <span class="user-badge"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout"><i class="bi bi-box-arrow-right"></i> Chiqish</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {% elif user.is_authenticated %}
+    <div class="navbar">
+        <span class="brand"><i class="bi bi-cpu-fill"></i> SmartBiz</span>
+        <div class="right">
+            {% if notif_count %}
+            <span class="notif-badge"><i class="bi bi-bell-fill"></i> {{ notif_count }}</span>
+            {% endif %}
+            <span class="user-badge"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout"><i class="bi bi-box-arrow-right"></i> Chiqish</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
