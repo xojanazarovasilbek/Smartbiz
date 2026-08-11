@@ -11,19 +11,17 @@ from .models import (
     Attendance, Category, Expense, Group, Payment, Product, ProductCategory,
     Purchase, Sale, SaleItem, Student, Teacher, Tenant, TenantUser,
     QurilishCategory, QurilishProduct, QurilishSale, QurilishSaleItem, QurilishPurchase,
-    BogchaGroup, Child, AuthorizedPickup, ChildDailyLog, MealServing, MealLog, PickupLog,AuditLog
+    BogchaGroup, Child, AuthorizedPickup, ChildDailyLog, MealServing, MealLog, PickupLog,
 )
+
+
+def _is_super_admin(user):
+    return user.is_superuser or getattr(user, "is_super_admin", False)
 
 
 
 def home(request):
     return render(request, "reklama/reklama.html")
-
-
-
-
-def _is_super_admin(user):
-    return user.is_superuser or getattr(user, "is_super_admin", False)
 
 
 def _has_role(user, *allowed_roles):
@@ -43,9 +41,6 @@ def _require_role(user, *allowed_roles):
     if not _has_role(user, *allowed_roles):
         raise PermissionDenied("Sizning rolingiz bu bolimga kirish uchun yetarli emas.")
 
-def log_action(request, tenant, action_text):
-    """Har qanday viewda chaqirib, amalni tarixga yozib qoyish uchun."""
-    AuditLog.objects.create(tenant=tenant, user=request.user, action=action_text)
 
 @login_required
 def home_redirect(request):
@@ -335,8 +330,16 @@ def student_payment_create(request, slug, tenant_id, pk):
             student.balance = student.balance + amount - total_needed
 
             # Keyingi oy uchun (hali tolanmagan) yozuv - "muddat" sifatida korinadi
+            # Oldindan tolash tamoyili: keyingi oy uchun muddat oy boshigacha
+            # emas, JORIY oyning 25-kuniga qoyiladi - shunda ota-ona yangi
+            # oy boshlanishidan oldin tolashi kerak boladi.
+            from calendar import monthrange
+            last_day_of_month = monthrange(last_month_date.year, last_month_date.month)[1]
+            advance_due_day = min(25, last_day_of_month)
+            advance_due_date = date(last_month_date.year, last_month_date.month, advance_due_day)
+
             next_month = _add_months(last_month_date, 1)
-            next_due = custom_due_date or next_month
+            next_due = custom_due_date or advance_due_date
             Payment.objects.get_or_create(
                 tenant=tenant, student=student, month=next_month,
                 defaults={"due_date": next_due, "amount": group_price, "is_paid": False},
@@ -806,7 +809,6 @@ def payment_mark_paid(request, slug, tenant_id, pk):
         payment.is_paid = not payment.is_paid
         payment.paid_date = timezone.now().date() if payment.is_paid else None
         payment.save()
-        log_action(request, tenant, f"{payment.student.full_name} tolovini {'tolangan' if payment.is_paid else 'bekor'} deb belgiladi")
 
     return redirect("payment_list", slug=slug, tenant_id=tenant_id)
 
@@ -1076,7 +1078,6 @@ def product_delete(request, slug, tenant_id, category_id, pk):
     product = get_object_or_404(Product, pk=pk, tenant=tenant)
 
     if request.method == "POST":
-        log_action(request, tenant, f"'{product.name}' mahsulotini ochirdi")
         try:
             product.delete()
         except ProtectedError:
