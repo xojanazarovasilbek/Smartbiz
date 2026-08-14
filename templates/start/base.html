@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}SmartBiz{% endblock %}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,38 +19,36 @@
             --text-dark: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             color: #334155;
             background-color: var(--bg-main);
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ---------------- NAVBAR DESIGN ---------------- */
+        /* --- NAVBAR STRUCT--- */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #ffffff;
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
-            z-index: 1000;
-            padding: 12px 24px;
+            z-index: 9999;
+            padding: 12px 20px;
         }
 
-        .nav-container {
+        .nav-wrapper {
             max-width: 1320px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .brand {
@@ -59,104 +57,84 @@
             color: var(--text-dark);
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: var(--primary-light);
-            padding: 8px 16px;
-            border-radius: 12px;
+            padding: 8px 14px;
+            border-radius: 10px;
             border: 1px solid #dbeafe;
-            letter-spacing: -0.02em;
-            white-space: nowrap;
         }
 
         .brand i { color: var(--primary); font-size: 18px; }
 
-        /* Mobil menu tugmasi (Hamburger) */
-        .menu-toggle {
+        .menu-toggle-btn {
             display: none;
             background: #ffffff;
             border: 1px solid var(--border-color);
-            font-size: 20px;
+            font-size: 22px;
             padding: 6px 12px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             color: var(--text-dark);
         }
 
-        /* Nav Kontent */
-        .nav-content {
+        .nav-body-custom {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
-            gap: 16px;
+            flex: 1;
+            margin-left: 16px;
         }
 
-        .nav-links {
+        .nav-links-custom {
             display: flex;
             align-items: center;
             gap: 6px;
             flex-wrap: wrap;
         }
 
-        .nav-item {
+        .nav-item-custom {
             color: var(--text-muted);
             text-decoration: none;
             padding: 8px 14px;
-            font-size: 13.5px;
+            font-size: 13px;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 8px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: #ffffff;
             border: 1px solid var(--border-color);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
         }
 
-        .nav-item i { font-size: 15px; color: #64748b; transition: color 0.2s ease; }
-        .nav-item:hover { color: var(--primary); background: var(--primary-light); border-color: #bfdbfe; }
+        .nav-item-custom i { color: #64748b; }
+        .nav-item-custom:hover { color: var(--primary); background: var(--primary-light); }
 
-        .nav-right {
+        .nav-right-custom {
             display: flex;
             align-items: center;
             gap: 10px;
             white-space: nowrap;
         }
 
-        .user-badge {
+        .user-badge-custom {
             font-size: 13px;
             color: var(--text-dark);
             font-weight: 600;
             background: #ffffff;
-            padding: 7px 14px;
+            padding: 7px 12px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .user-badge i { color: var(--primary); font-size: 15px; }
-
-        .notif-badge {
-            background: #dc2626;
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .logout-btn {
+        .logout-btn-custom {
             background: #fef2f2;
             color: #dc2626;
-            padding: 8px 16px;
-            border-radius: 10px;
+            padding: 8px 14px;
+            border-radius: 8px;
             border: 1px solid #fecaca;
             cursor: pointer;
             font-size: 13px;
@@ -164,118 +142,65 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s ease;
         }
 
-        .logout-btn:hover {
-            background: #dc2626;
-            color: #ffffff;
-            border-color: #dc2626;
-        }
-
-        /* ---------------- CONTAINER & TABLES ---------------- */
         .container {
             max-width: 1320px;
-            margin: 24px auto;
-            padding: 0 24px;
+            margin: 20px auto;
+            padding: 0 16px;
         }
 
-        .card-content {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--card-shadow);
-        }
-
-        /* JADVAL SIGHMAY QOLMASLIGI UCHUN AVTO-SCROLL */
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: #ffffff;
-        }
-
-        /* Agar jadval div ichida bo'lsa scroll qiladi */
-        .card-content, .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        th {
-            background: #f8fafc;
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            padding: 14px 18px;
-            border-bottom: 1px solid var(--border-color);
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        td { 
-            padding: 14px 18px; 
-            border-bottom: 1px solid #f1f5f9; 
-            font-size: 14px; 
-            white-space: nowrap; 
-        }
-
-        /* ---------------- MOBIL MOSLASHUV (RESPONSIVE) ---------------- */
-        @media (max-width: 992px) {
-            .navbar { padding: 12px 16px; }
-
-            .menu-toggle { display: block; }
-
-            .nav-container {
-                flex-wrap: wrap;
+        /* --- MOBIL UCHUN MAJBURIY CSS (Breakpoints) --- */
+        @media screen and (max-width: 991px) {
+            .menu-toggle-btn {
+                display: block !important;
             }
 
-            .nav-content {
-                display: none; /* Mobilda menyu standart holatda berk bo'ladi */
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-                padding-top: 14px;
-                margin-top: 10px;
-                border-top: 1px solid var(--border-color);
+            .nav-body-custom {
+                display: none !important; /* Standart holatda menyuni yashirish */
+                width: 100% !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                margin-left: 0 !important;
+                margin-top: 12px !important;
+                padding-top: 12px !important;
+                border-top: 1px solid var(--border-color) !important;
             }
 
-            .nav-content.active {
-                display: flex; /* Hamburger bosilganda ochiladi */
+            .nav-body-custom.show-menu {
+                display: flex !important; /* Hamburger bosilganda ochiladi */
             }
 
-            .nav-links {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
+            .nav-links-custom {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
             }
 
-            .nav-item {
-                width: 100%;
-                justify-content: flex-start;
-                padding: 10px 14px;
+            .nav-item-custom {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 10px 14px !important;
             }
 
-            .nav-right {
-                flex-direction: column;
-                align-items: stretch;
-                margin-top: 10px;
-                gap: 8px;
+            .nav-right-custom {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                margin-top: 10px !important;
+                gap: 8px !important;
             }
 
-            .user-badge, .logout-btn, .notif-badge {
-                width: 100%;
-                justify-content: center;
+            .user-badge-custom, .logout-btn-custom {
+                width: 100% !important;
+                justify-content: center !important;
             }
 
-            .container {
-                padding: 0 12px;
-                margin: 16px auto;
-            }
-
-            .card-content {
-                padding: 16px;
+            /* Jadvallarning ekrandan chiqib ketmasligi uchun majburiy scroll */
+            table {
+                display: block !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                width: 100% !important;
             }
         }
     </style>
@@ -283,7 +208,7 @@
 <body>
 
     <nav class="navbar">
-        <div class="nav-container">
+        <div class="nav-wrapper">
             {% if tenant %}
                 <span class="brand"><i class="bi bi-building-gear"></i> {{ tenant.name }}</span>
             {% else %}
@@ -291,72 +216,68 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-                <button class="menu-toggle" onclick="toggleMenu()">
+                <button class="menu-toggle-btn" onclick="toggleSmartMenu()" type="button">
                     <i class="bi bi-list"></i>
                 </button>
             {% endif %}
 
             {% if user.is_authenticated %}
-            <div class="nav-content" id="navContent">
-                <div class="nav-links">
+            <div class="nav-body-custom" id="smartNavMenu">
+                <div class="nav-links-custom">
                     {% if tenant %}
                         {% if tenant.category.module_type == "pos" %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-box-seam-fill"></i> Mahsulotlar</a>
-                            <a href="{% url 'sale_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-cart-fill"></i> Sotuv</a>
-                            <a href="{% url 'sale_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-receipt-cutoff"></i> Sotuvlar tarixi</a>
-                            <a href="{% url 'pos_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-bar-chart-line-fill"></i> Hisobotlar</a>
+                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                            <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-box-seam-fill"></i> Mahsulotlar</a>
+                            <a href="{% url 'sale_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-cart-fill"></i> Sotuv</a>
+                            <a href="{% url 'sale_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-receipt-cutoff"></i> Sotuvlar tarixi</a>
+                            <a href="{% url 'pos_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-bar-chart-line-fill"></i> Hisobotlar</a>
                             {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
-                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-people-fill"></i> Xodimlar</a>
+                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-people-fill"></i> Xodimlar</a>
                             {% endif %}
 
                         {% elif tenant.category.module_type == "qur" %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-bricks"></i> Mahsulotlar</a>
-                            <a href="{% url 'qur_sale_category_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-cart-check-fill"></i> Sotuv</a>
-                            <a href="{% url 'qur_sale_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-journal-text"></i> Sotuvlar tarixi</a>
-                            <a href="{% url 'qur_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-graph-up-arrow"></i> Hisobotlar</a>
+                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                            <a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-bricks"></i> Mahsulotlar</a>
+                            <a href="{% url 'qur_sale_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-cart-check-fill"></i> Sotuv</a>
+                            <a href="{% url 'qur_sale_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-journal-text"></i> Sotuvlar tarixi</a>
+                            <a href="{% url 'qur_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-graph-up-arrow"></i> Hisobotlar</a>
                             {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
-                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-people-fill"></i> Xodimlar</a>
+                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-people-fill"></i> Xodimlar</a>
                             {% endif %}
 
                         {% elif tenant.category.module_type == "bogcha" %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'child_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-emoji-smile-fill"></i> Bolalar</a>
-                            <a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-book-half"></i> Guruhlar</a>
-                            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-person-badge-fill"></i> Tarbiyachilar</a>
-                            <a href="{% url 'meal_log_create' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-egg-fried"></i> Oshpaz</a>
+                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                            <a href="{% url 'child_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-emoji-smile-fill"></i> Bolalar</a>
+                            <a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-book-half"></i> Guruhlar</a>
+                            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-person-badge-fill"></i> Tarbiyachilar</a>
+                            <a href="{% url 'meal_log_create' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-egg-fried"></i> Oshpaz</a>
                             {% if user.is_superuser or user.is_super_admin or user.role == "admin" or user.role == "director" %}
-                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-people-fill"></i> Xodimlar</a>
+                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-people-fill"></i> Xodimlar</a>
                             {% endif %}
 
                         {% else %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'tenant_students' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-mortarboard-fill"></i> O'quvchilar</a>
-                            <a href="{% url 'group_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-journal-bookmark-fill"></i> Guruhlar</a>
-                            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-person-workspace"></i> Ustozlar</a>
-                            <a href="{% url 'attendance_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-calendar-check-fill"></i> Davomat</a>
-                            <a href="{% url 'financial_report' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-pie-chart-fill"></i> Hisobotlar</a>
-                            <a href="{% url 'schedule_view' tenant.category.slug tenant.id %}" class="nav-item"><i class="bi bi-calendar-week-fill"></i> Dars jadvali</a>
+                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
+                            <a href="{% url 'tenant_students' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-mortarboard-fill"></i> O'quvchilar</a>
+                            <a href="{% url 'group_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-journal-bookmark-fill"></i> Guruhlar</a>
+                            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-person-workspace"></i> Ustozlar</a>
+                            <a href="{% url 'attendance_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-calendar-check-fill"></i> Davomat</a>
+                            <a href="{% url 'financial_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-pie-chart-fill"></i> Hisobotlar</a>
+                            <a href="{% url 'schedule_view' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-calendar-week-fill"></i> Dars jadvali</a>
                         {% endif %}
                     {% endif %}
                 </div>
 
-                <div class="nav-right">
+                <div class="nav-right-custom">
                     {% if tenant and user.is_superuser or user.is_super_admin %}
-                    <a href="{% url 'category_tenants' tenant.category.slug %}" class="nav-item" style="color:var(--primary); font-weight:700;">
+                    <a href="{% url 'category_tenants' tenant.category.slug %}" class="nav-item-custom" style="color:var(--primary); font-weight:700;">
                         <i class="bi bi-arrow-left-circle-fill"></i> Tenantlar
                     </a>
                     {% endif %}
 
-                    {% if notif_count %}
-                    <span class="notif-badge"><i class="bi bi-bell-fill"></i> {{ notif_count }}</span>
-                    {% endif %}
-
-                    <span class="user-badge"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
-                    <form method="post" action="{% url 'logout' %}" style="display:inline; width:100%;">
+                    <span class="user-badge-custom"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline; width: 100%;">
                         {% csrf_token %}
-                        <button type="submit" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Chiqish</button>
+                        <button type="submit" class="logout-btn-custom"><i class="bi bi-box-arrow-right"></i> Chiqish</button>
                     </form>
                 </div>
             </div>
@@ -369,9 +290,13 @@
     </main>
 
     <script>
-        function toggleMenu() {
-            const navContent = document.getElementById('navContent');
-            navContent.classList.toggle('active');
+        function toggleSmartMenu() {
+            var menu = document.getElementById('smartNavMenu');
+            if (menu.classList.contains('show-menu')) {
+                menu.classList.remove('show-menu');
+            } else {
+                menu.classList.add('show-menu');
+            }
         }
     </script>
 </body>
