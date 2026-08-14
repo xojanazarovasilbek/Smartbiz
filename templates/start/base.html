@@ -2,15 +2,22 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
     <title>{% block title %}SmartBiz{% endblock %}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+          rel="stylesheet">
 
     <style>
+
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
@@ -22,7 +29,16 @@
             --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+        }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -30,274 +46,942 @@
             background-color: var(--bg-main);
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        /* --- NAVBAR STRUCT--- */
+        /* =========================
+           NAVBAR
+        ========================= */
+
         .navbar {
             background: #ffffff;
             border-bottom: 1px solid var(--border-color);
+
             position: sticky;
             top: 0;
             z-index: 9999;
-            padding: 12px 20px;
+
+            padding: 10px 20px;
+
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
         }
 
         .nav-wrapper {
             max-width: 1320px;
             margin: 0 auto;
+
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            gap: 12px;
+
+            min-height: 48px;
         }
+
+        /* =========================
+           LOGO
+        ========================= */
 
         .brand {
             font-weight: 800;
             font-size: 16px;
+
             color: var(--text-dark);
+
             display: inline-flex;
             align-items: center;
             gap: 8px;
+
             background: var(--primary-light);
+
             padding: 8px 14px;
+
             border-radius: 10px;
+
             border: 1px solid #dbeafe;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+
+            max-width: 300px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .brand i { color: var(--primary); font-size: 18px; }
+        .brand i {
+            color: var(--primary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* =========================
+           HAMBURGER
+        ========================= */
 
         .menu-toggle-btn {
             display: none;
+
+            margin-left: auto;
+
+            width: 42px;
+            height: 42px;
+
             background: #ffffff;
+
             border: 1px solid var(--border-color);
+
             font-size: 22px;
-            padding: 6px 12px;
-            border-radius: 8px;
+
+            border-radius: 10px;
+
             cursor: pointer;
+
             color: var(--text-dark);
+
+            align-items: center;
+            justify-content: center;
+
+            transition: 0.2s;
         }
+
+        .menu-toggle-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* =========================
+           NAV BODY
+        ========================= */
 
         .nav-body-custom {
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             flex: 1;
-            margin-left: 16px;
+
+            margin-left: 8px;
+
+            min-width: 0;
         }
+
+        /* =========================
+           LINKS
+        ========================= */
 
         .nav-links-custom {
             display: flex;
             align-items: center;
+
             gap: 6px;
+
             flex-wrap: wrap;
         }
 
         .nav-item-custom {
             color: var(--text-muted);
+
             text-decoration: none;
-            padding: 8px 14px;
-            font-size: 13px;
+
+            padding: 8px 12px;
+
+            font-size: 12px;
+
             font-weight: 600;
+
             border-radius: 8px;
+
             display: inline-flex;
             align-items: center;
+
             gap: 6px;
+
             background: #ffffff;
+
             border: 1px solid var(--border-color);
+
             white-space: nowrap;
+
+            transition: all 0.2s ease;
         }
 
-        .nav-item-custom i { color: #64748b; }
-        .nav-item-custom:hover { color: var(--primary); background: var(--primary-light); }
+        .nav-item-custom i {
+            color: #64748b;
+        }
+
+        .nav-item-custom:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+            border-color: #bfdbfe;
+        }
+
+        .nav-item-custom:hover i {
+            color: var(--primary);
+        }
+
+        /* =========================
+           RIGHT SIDE
+        ========================= */
 
         .nav-right-custom {
             display: flex;
             align-items: center;
-            gap: 10px;
+
+            gap: 8px;
+
             white-space: nowrap;
+
+            margin-left: 8px;
         }
 
         .user-badge-custom {
-            font-size: 13px;
+            font-size: 12px;
+
             color: var(--text-dark);
+
             font-weight: 600;
+
             background: #ffffff;
-            padding: 7px 12px;
+
+            padding: 7px 11px;
+
             border-radius: 20px;
+
             border: 1px solid var(--border-color);
+
             display: inline-flex;
             align-items: center;
+
             gap: 6px;
+
+            max-width: 150px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-badge-custom i {
+            flex-shrink: 0;
         }
 
         .logout-btn-custom {
             background: #fef2f2;
+
             color: #dc2626;
-            padding: 8px 14px;
+
+            padding: 8px 12px;
+
             border-radius: 8px;
+
             border: 1px solid #fecaca;
+
             cursor: pointer;
-            font-size: 13px;
+
+            font-size: 12px;
+
             font-weight: 600;
+
             display: inline-flex;
             align-items: center;
+
+            justify-content: center;
+
             gap: 6px;
+
+            transition: 0.2s;
         }
+
+        .logout-btn-custom:hover {
+            background: #fee2e2;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
 
         .container {
             max-width: 1320px;
+
             margin: 20px auto;
+
             padding: 0 16px;
+
+            width: 100%;
         }
 
-        /* --- MOBIL UCHUN MAJBURIY CSS (Breakpoints) --- */
-        @media screen and (max-width: 991px) {
-            .menu-toggle-btn {
-                display: block !important;
+
+        /* =====================================================
+           TABLET
+        ===================================================== */
+
+        @media screen and (max-width: 1100px) {
+
+            .navbar {
+                padding: 10px 15px;
             }
 
+            .nav-item-custom {
+                padding: 7px 9px;
+                font-size: 11px;
+            }
+
+            .brand {
+                font-size: 14px;
+            }
+
+            .nav-right-custom {
+                gap: 5px;
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media screen and (max-width: 991px) {
+
+            .navbar {
+                padding: 9px 12px;
+
+                position: sticky;
+                top: 0;
+            }
+
+            .nav-wrapper {
+                width: 100%;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                flex-wrap: wrap;
+
+                gap: 0;
+            }
+
+            /* LOGO */
+
+            .brand {
+                font-size: 14px;
+
+                padding: 8px 11px;
+
+                max-width: calc(100% - 55px);
+
+                border-radius: 9px;
+            }
+
+            .brand i {
+                font-size: 17px;
+            }
+
+            /* HAMBURGER */
+
+            .menu-toggle-btn {
+                display: flex !important;
+
+                flex-shrink: 0;
+            }
+
+            /* MENU */
+
             .nav-body-custom {
-                display: none !important; /* Standart holatda menyuni yashirish */
+                display: none !important;
+
                 width: 100% !important;
+
                 flex-direction: column !important;
+
                 align-items: stretch !important;
-                margin-left: 0 !important;
-                margin-top: 12px !important;
-                padding-top: 12px !important;
-                border-top: 1px solid var(--border-color) !important;
+
+                margin: 10px 0 0 0 !important;
+
+                padding: 12px 0 4px 0 !important;
+
+                border-top: 1px solid var(--border-color);
+
+                flex-basis: 100%;
             }
 
             .nav-body-custom.show-menu {
-                display: flex !important; /* Hamburger bosilganda ochiladi */
+                display: flex !important;
             }
 
+            /* LINKS */
+
             .nav-links-custom {
+                width: 100%;
+
+                display: flex;
+
                 flex-direction: column !important;
+
                 align-items: stretch !important;
-                gap: 8px !important;
+
+                gap: 6px !important;
             }
 
             .nav-item-custom {
                 width: 100% !important;
+
+                min-height: 44px;
+
+                padding: 11px 14px !important;
+
+                font-size: 13px !important;
+
                 justify-content: flex-start !important;
-                padding: 10px 14px !important;
+
+                border-radius: 9px;
+
+                background: #ffffff;
             }
+
+            .nav-item-custom i {
+                font-size: 16px;
+
+                width: 20px;
+
+                text-align: center;
+            }
+
+            /* RIGHT SIDE */
 
             .nav-right-custom {
+                width: 100%;
+
+                display: flex;
+
                 flex-direction: column !important;
+
                 align-items: stretch !important;
-                margin-top: 10px !important;
-                gap: 8px !important;
+
+                gap: 6px !important;
+
+                margin: 10px 0 0 0 !important;
+
+                padding-top: 10px;
+
+                border-top: 1px solid var(--border-color);
             }
 
-            .user-badge-custom, .logout-btn-custom {
+            .user-badge-custom {
                 width: 100% !important;
-                justify-content: center !important;
+
+                max-width: none;
+
+                min-height: 42px;
+
+                padding: 10px 14px;
+
+                justify-content: flex-start !important;
+
+                border-radius: 9px;
+
+                font-size: 13px;
             }
 
-            /* Jadvallarning ekrandan chiqib ketmasligi uchun majburiy scroll */
+            .logout-btn-custom {
+                width: 100% !important;
+
+                min-height: 44px;
+
+                padding: 10px 14px;
+
+                font-size: 13px;
+
+                border-radius: 9px;
+            }
+
+            /* TENANTLAR */
+
+            .nav-right-custom > .nav-item-custom {
+                width: 100% !important;
+
+                min-height: 44px;
+
+                justify-content: flex-start !important;
+            }
+
+            /* MAIN */
+
+            .container {
+                width: 100%;
+
+                max-width: 100%;
+
+                margin: 15px auto;
+
+                padding: 0 10px;
+            }
+
+            /* TABLE */
+
             table {
                 display: block !important;
-                overflow-x: auto !important;
-                white-space: nowrap !important;
+
                 width: 100% !important;
+
+                max-width: 100% !important;
+
+                overflow-x: auto !important;
+
+                white-space: nowrap !important;
+
+                -webkit-overflow-scrolling: touch;
             }
+
         }
+
+
+        /* =====================================================
+           VERY SMALL PHONES
+        ===================================================== */
+
+        @media screen and (max-width: 400px) {
+
+            .navbar {
+                padding: 8px 9px;
+            }
+
+            .brand {
+                font-size: 13px;
+
+                padding: 7px 9px;
+            }
+
+            .menu-toggle-btn {
+                width: 40px;
+                height: 40px;
+
+                font-size: 21px;
+            }
+
+            .nav-item-custom {
+                min-height: 42px;
+
+                padding: 10px 12px !important;
+
+                font-size: 12px !important;
+            }
+
+            .user-badge-custom {
+                font-size: 12px;
+            }
+
+            .logout-btn-custom {
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 0 8px;
+            }
+
+        }
+
     </style>
 </head>
+
+
 <body>
 
-    <nav class="navbar">
-        <div class="nav-wrapper">
-            {% if tenant %}
-                <span class="brand"><i class="bi bi-building-gear"></i> {{ tenant.name }}</span>
-            {% else %}
-                <span class="brand"><i class="bi bi-cpu-fill"></i> SmartBiz</span>
-            {% endif %}
+<nav class="navbar">
 
-            {% if user.is_authenticated %}
-                <button class="menu-toggle-btn" onclick="toggleSmartMenu()" type="button">
-                    <i class="bi bi-list"></i>
-                </button>
-            {% endif %}
+    <div class="nav-wrapper">
 
-            {% if user.is_authenticated %}
-            <div class="nav-body-custom" id="smartNavMenu">
-                <div class="nav-links-custom">
-                    {% if tenant %}
-                        {% if tenant.category.module_type == "pos" %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-box-seam-fill"></i> Mahsulotlar</a>
-                            <a href="{% url 'sale_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-cart-fill"></i> Sotuv</a>
-                            <a href="{% url 'sale_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-receipt-cutoff"></i> Sotuvlar tarixi</a>
-                            <a href="{% url 'pos_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-bar-chart-line-fill"></i> Hisobotlar</a>
-                            {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
-                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-people-fill"></i> Xodimlar</a>
-                            {% endif %}
+        <!-- LOGO / TENANT -->
 
-                        {% elif tenant.category.module_type == "qur" %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-bricks"></i> Mahsulotlar</a>
-                            <a href="{% url 'qur_sale_category_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-cart-check-fill"></i> Sotuv</a>
-                            <a href="{% url 'qur_sale_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-journal-text"></i> Sotuvlar tarixi</a>
-                            <a href="{% url 'qur_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-graph-up-arrow"></i> Hisobotlar</a>
-                            {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
-                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-people-fill"></i> Xodimlar</a>
-                            {% endif %}
+        {% if tenant %}
 
-                        {% elif tenant.category.module_type == "bogcha" %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'child_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-emoji-smile-fill"></i> Bolalar</a>
-                            <a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-book-half"></i> Guruhlar</a>
-                            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-person-badge-fill"></i> Tarbiyachilar</a>
-                            <a href="{% url 'meal_log_create' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-egg-fried"></i> Oshpaz</a>
-                            {% if user.is_superuser or user.is_super_admin or user.role == "admin" or user.role == "director" %}
-                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-people-fill"></i> Xodimlar</a>
-                            {% endif %}
+            <span class="brand">
+                <i class="bi bi-building-gear"></i>
+                <span>{{ tenant.name }}</span>
+            </span>
 
-                        {% else %}
-                            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Asosiy</a>
-                            <a href="{% url 'tenant_students' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-mortarboard-fill"></i> O'quvchilar</a>
-                            <a href="{% url 'group_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-journal-bookmark-fill"></i> Guruhlar</a>
-                            <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-person-workspace"></i> Ustozlar</a>
-                            <a href="{% url 'attendance_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-calendar-check-fill"></i> Davomat</a>
-                            <a href="{% url 'financial_report' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-pie-chart-fill"></i> Hisobotlar</a>
-                            <a href="{% url 'schedule_view' tenant.category.slug tenant.id %}" class="nav-item-custom"><i class="bi bi-calendar-week-fill"></i> Dars jadvali</a>
+        {% else %}
+
+            <span class="brand">
+                <i class="bi bi-cpu-fill"></i>
+                <span>SmartBiz</span>
+            </span>
+
+        {% endif %}
+
+
+        <!-- MOBILE MENU BUTTON -->
+
+        {% if user.is_authenticated %}
+
+            <button
+                class="menu-toggle-btn"
+                onclick="toggleSmartMenu()"
+                type="button"
+                aria-label="Menyuni ochish"
+                id="smartMenuButton">
+
+                <i class="bi bi-list" id="smartMenuIcon"></i>
+
+            </button>
+
+        {% endif %}
+
+
+        <!-- NAVIGATION -->
+
+        {% if user.is_authenticated %}
+
+        <div class="nav-body-custom" id="smartNavMenu">
+
+            <div class="nav-links-custom">
+
+                {% if tenant %}
+
+                    {% if tenant.category.module_type == "pos" %}
+
+                        <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            Asosiy
+                        </a>
+
+                        <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-box-seam-fill"></i>
+                            Mahsulotlar
+                        </a>
+
+                        <a href="{% url 'sale_category_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-cart-fill"></i>
+                            Sotuv
+                        </a>
+
+                        <a href="{% url 'sale_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-receipt-cutoff"></i>
+                            Sotuvlar tarixi
+                        </a>
+
+                        <a href="{% url 'pos_report' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-bar-chart-line-fill"></i>
+                            Hisobotlar
+                        </a>
+
+                        {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
+
+                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}"
+                               class="nav-item-custom">
+                                <i class="bi bi-people-fill"></i>
+                                Xodimlar
+                            </a>
+
                         {% endif %}
-                    {% endif %}
-                </div>
 
-                <div class="nav-right-custom">
-                    {% if tenant and user.is_superuser or user.is_super_admin %}
-                    <a href="{% url 'category_tenants' tenant.category.slug %}" class="nav-item-custom" style="color:var(--primary); font-weight:700;">
-                        <i class="bi bi-arrow-left-circle-fill"></i> Tenantlar
-                    </a>
+
+                    {% elif tenant.category.module_type == "qur" %}
+
+                        <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            Asosiy
+                        </a>
+
+                        <a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-bricks"></i>
+                            Mahsulotlar
+                        </a>
+
+                        <a href="{% url 'qur_sale_category_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-cart-check-fill"></i>
+                            Sotuv
+                        </a>
+
+                        <a href="{% url 'qur_sale_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-journal-text"></i>
+                            Sotuvlar tarixi
+                        </a>
+
+                        <a href="{% url 'qur_report' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            Hisobotlar
+                        </a>
+
+                        {% if user.is_superuser or user.is_super_admin or user.role == "admin" %}
+
+                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}"
+                               class="nav-item-custom">
+                                <i class="bi bi-people-fill"></i>
+                                Xodimlar
+                            </a>
+
+                        {% endif %}
+
+
+                    {% elif tenant.category.module_type == "bogcha" %}
+
+                        <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            Asosiy
+                        </a>
+
+                        <a href="{% url 'child_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-emoji-smile-fill"></i>
+                            Bolalar
+                        </a>
+
+                        <a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-book-half"></i>
+                            Guruhlar
+                        </a>
+
+                        <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-person-badge-fill"></i>
+                            Tarbiyachilar
+                        </a>
+
+                        <a href="{% url 'meal_log_create' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-egg-fried"></i>
+                            Oshpaz
+                        </a>
+
+                        {% if user.is_superuser or user.is_super_admin or user.role == "admin" or user.role == "director" %}
+
+                            <a href="{% url 'staff_list' tenant.category.slug tenant.id %}"
+                               class="nav-item-custom">
+                                <i class="bi bi-people-fill"></i>
+                                Xodimlar
+                            </a>
+
+                        {% endif %}
+
+
+                    {% else %}
+
+                        <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            Asosiy
+                        </a>
+
+                        <a href="{% url 'tenant_students' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-mortarboard-fill"></i>
+                            O'quvchilar
+                        </a>
+
+                        <a href="{% url 'group_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-journal-bookmark-fill"></i>
+                            Guruhlar
+                        </a>
+
+                        <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-person-workspace"></i>
+                            Ustozlar
+                        </a>
+
+                        <a href="{% url 'attendance_report' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-calendar-check-fill"></i>
+                            Davomat
+                        </a>
+
+                        <a href="{% url 'financial_report' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-pie-chart-fill"></i>
+                            Hisobotlar
+                        </a>
+
+                        <a href="{% url 'schedule_view' tenant.category.slug tenant.id %}"
+                           class="nav-item-custom">
+                            <i class="bi bi-calendar-week-fill"></i>
+                            Dars jadvali
+                        </a>
+
                     {% endif %}
 
-                    <span class="user-badge-custom"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
-                    <form method="post" action="{% url 'logout' %}" style="display:inline; width: 100%;">
-                        {% csrf_token %}
-                        <button type="submit" class="logout-btn-custom"><i class="bi bi-box-arrow-right"></i> Chiqish</button>
-                    </form>
-                </div>
+                {% endif %}
+
             </div>
-            {% endif %}
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="nav-right-custom">
+
+                {% if tenant and user.is_superuser or user.is_super_admin %}
+
+                    <a href="{% url 'category_tenants' tenant.category.slug %}"
+                       class="nav-item-custom"
+                       style="color:var(--primary); font-weight:700;">
+
+                        <i class="bi bi-arrow-left-circle-fill"></i>
+                        Tenantlar
+
+                    </a>
+
+                {% endif %}
+
+
+                <span class="user-badge-custom">
+
+                    <i class="bi bi-person-circle"></i>
+
+                    <span>{{ user.username }}</span>
+
+                </span>
+
+
+                <form
+                    method="post"
+                    action="{% url 'logout' %}"
+                    style="width:100%;">
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="logout-btn-custom">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Chiqish
+
+                    </button>
+
+                </form>
+
+            </div>
+
         </div>
-    </nav>
 
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
+        {% endif %}
 
-    <script>
-        function toggleSmartMenu() {
-            var menu = document.getElementById('smartNavMenu');
-            if (menu.classList.contains('show-menu')) {
-                menu.classList.remove('show-menu');
-            } else {
-                menu.classList.add('show-menu');
+    </div>
+
+</nav>
+
+
+<main class="container">
+
+    {% block content %}{% endblock %}
+
+</main>
+
+
+<script>
+
+function toggleSmartMenu() {
+
+    const menu = document.getElementById("smartNavMenu");
+    const button = document.getElementById("smartMenuButton");
+    const icon = document.getElementById("smartMenuIcon");
+
+    if (!menu) return;
+
+    menu.classList.toggle("show-menu");
+
+    if (menu.classList.contains("show-menu")) {
+
+        icon.classList.remove("bi-list");
+        icon.classList.add("bi-x-lg");
+
+        button.setAttribute(
+            "aria-label",
+            "Menyuni yopish"
+        );
+
+    } else {
+
+        icon.classList.remove("bi-x-lg");
+        icon.classList.add("bi-list");
+
+        button.setAttribute(
+            "aria-label",
+            "Menyuni ochish"
+        );
+
+    }
+
+}
+
+
+/* Link bosilganda mobil menyuni avtomatik yopish */
+
+document.querySelectorAll(".nav-item-custom").forEach(function(link) {
+
+    link.addEventListener("click", function() {
+
+        if (window.innerWidth <= 991) {
+
+            const menu =
+                document.getElementById("smartNavMenu");
+
+            const icon =
+                document.getElementById("smartMenuIcon");
+
+            if (menu) {
+                menu.classList.remove("show-menu");
             }
+
+            if (icon) {
+
+                icon.classList.remove("bi-x-lg");
+                icon.classList.add("bi-list");
+
+            }
+
         }
-    </script>
+
+    });
+
+});
+
+
+/* Ekran desktopga qaytganda menyuni reset qilish */
+
+window.addEventListener("resize", function() {
+
+    if (window.innerWidth > 991) {
+
+        const menu =
+            document.getElementById("smartNavMenu");
+
+        const icon =
+            document.getElementById("smartMenuIcon");
+
+        if (menu) {
+            menu.classList.remove("show-menu");
+        }
+
+        if (icon) {
+
+            icon.classList.remove("bi-x-lg");
+            icon.classList.add("bi-list");
+
+        }
+
+    }
+
+});
+
+</script>
+
 </body>
 </html>
