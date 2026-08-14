@@ -41,12 +41,12 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            padding: 12px 24px;
         }
 
         .nav-container {
             max-width: 1320px;
             margin: 0 auto;
-            padding: 12px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -75,7 +75,7 @@
             display: none;
             background: #ffffff;
             border: 1px solid var(--border-color);
-            font-size: 22px;
+            font-size: 20px;
             padding: 6px 12px;
             border-radius: 10px;
             cursor: pointer;
@@ -117,12 +117,11 @@
 
         .nav-item i { font-size: 15px; color: #64748b; transition: color 0.2s ease; }
         .nav-item:hover { color: var(--primary); background: var(--primary-light); border-color: #bfdbfe; }
-        .nav-item:hover i { color: var(--primary); }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             white-space: nowrap;
         }
 
@@ -174,19 +173,11 @@
             border-color: #dc2626;
         }
 
-        /* ---------------- ASOSIY LAYOUT ---------------- */
+        /* ---------------- CONTAINER & TABLES ---------------- */
         .container {
             max-width: 1320px;
             margin: 24px auto;
             padding: 0 24px;
-        }
-
-        /* Grid va Kartochkalar moslashuvi uchun yordamchi klasslar */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
         }
 
         .card-content {
@@ -197,22 +188,18 @@
             box-shadow: var(--card-shadow);
         }
 
-        /* Jadvallarning ekrandan chiqib ketmasligi uchun */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
+        /* JADVAL SIGHMAY QOLMASLIGI UCHUN AVTO-SCROLL */
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
             background: #ffffff;
-            min-width: 600px;
+        }
+
+        /* Agar jadval div ichida bo'lsa scroll qiladi */
+        .card-content, .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         th {
@@ -224,12 +211,20 @@
             padding: 14px 18px;
             border-bottom: 1px solid var(--border-color);
             text-align: left;
+            white-space: nowrap;
         }
 
-        td { padding: 14px 18px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        td { 
+            padding: 14px 18px; 
+            border-bottom: 1px solid #f1f5f9; 
+            font-size: 14px; 
+            white-space: nowrap; 
+        }
 
         /* ---------------- MOBIL MOSLASHUV (RESPONSIVE) ---------------- */
-        @media (max-width: 1024px) {
+        @media (max-width: 992px) {
+            .navbar { padding: 12px 16px; }
+
             .menu-toggle { display: block; }
 
             .nav-container {
@@ -237,32 +232,36 @@
             }
 
             .nav-content {
-                display: none; /* Mobil ekranda yashiriladi */
+                display: none; /* Mobilda menyu standart holatda berk bo'ladi */
                 flex-direction: column;
                 align-items: stretch;
                 width: 100%;
-                padding-top: 16px;
+                padding-top: 14px;
+                margin-top: 10px;
                 border-top: 1px solid var(--border-color);
             }
 
             .nav-content.active {
-                display: flex; /* Hamburger bosilganda chiqadi */
+                display: flex; /* Hamburger bosilganda ochiladi */
             }
 
             .nav-links {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 8px;
             }
 
             .nav-item {
                 width: 100%;
                 justify-content: flex-start;
+                padding: 10px 14px;
             }
 
             .nav-right {
                 flex-direction: column;
                 align-items: stretch;
-                margin-top: 8px;
+                margin-top: 10px;
+                gap: 8px;
             }
 
             .user-badge, .logout-btn, .notif-badge {
@@ -271,7 +270,7 @@
             }
 
             .container {
-                padding: 0 16px;
+                padding: 0 12px;
                 margin: 16px auto;
             }
 
@@ -292,7 +291,7 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-                <button class="menu-toggle" onclick="toggleMenu()" aria-label="Menyu">
+                <button class="menu-toggle" onclick="toggleMenu()">
                     <i class="bi bi-list"></i>
                 </button>
             {% endif %}
