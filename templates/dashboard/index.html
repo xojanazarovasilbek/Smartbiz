@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {{ tenant.name|default:"SmartBiz" }} - Boshqaruv Paneli
+    </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex min-h-screen">
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="w-64 bg-[#0a192f] text-white flex flex-col justify-between p-4 flex-shrink-0">
+
+    <div>
+
+        <!-- LOGO -->
+        <div class="flex items-center gap-3 mb-6 px-2">
+
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl font-bold">
+                S
+            </div>
+
+            <div>
+                <h1 class="text-lg font-bold leading-none">
+                    SmartBiz
+                </h1>
+
+                <span class="text-xs text-gray-400">
+                    CRM Platformasi
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- TENANT INFO -->
+        <div class="bg-white/5 rounded-xl p-3 mb-5">
+
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider">
+                Tashkilot
+            </p>
+
+            <p class="text-sm font-semibold text-white truncate mt-1">
+                {{ tenant.name }}
+            </p>
+
+            <p class="text-[10px] text-gray-500 mt-1">
+                {{ tenant.category.name }}
+            </p>
+
+        </div>
+
+
+        <!-- MENU -->
+
+        <nav class="space-y-4 overflow-y-auto max-h-[calc(100vh-220px)] pr-1">
+
+            <!-- BOSH SAHIFA -->
+
+            <a href="{% url 'tenant_dashboard' tenant.category.slug tenant.id %}"
+               class="flex items-center gap-3 bg-blue-600 text-white px-4 py-2.5 rounded-xl font-medium text-sm">
+
+                <i class="fa-solid fa-chart-pie"></i>
+
+                Bosh sahifa
+
+            </a>
+
+
+            <!-- O'QUV MARKAZI -->
+
+            <div>
+
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-2 px-3">
+                    O'quv Markazi
+                </p>
+
+                <ul class="space-y-1 text-xs">
+
+                    <li>
+                        <a href="{% url 'tenant_students' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-user-graduate mr-2"></i>
+
+                            O'quvchilar
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'teacher_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-chalkboard-user mr-2"></i>
+
+                            Ustozlar
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'group_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-layer-group mr-2"></i>
+
+                            Guruhlar
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'tenant_attendance_today' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-clipboard-user mr-2"></i>
+
+                            Davomat
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'payment_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-money-bill-wave mr-2"></i>
+
+                            To'lovlar
+
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- POS -->
+
+            <div>
+
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-2 px-3">
+                    POS Do'kon
+                </p>
+
+                <ul class="space-y-1 text-xs">
+
+                    <li>
+                        <a href="{% url 'product_category_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-box mr-2"></i>
+
+                            Mahsulotlar
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'sale_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-cart-shopping mr-2"></i>
+
+                            Sotuvlar
+
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- QURILISH -->
+
+            <div>
+
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-2 px-3">
+                    Qurilish
+                </p>
+
+                <ul class="space-y-1 text-xs">
+
+                    <li>
+                        <a href="{% url 'qur_category_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-trowel-bricks mr-2"></i>
+
+                            Qurilish mollari
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'qur_sale_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-truck-ramp-box mr-2"></i>
+
+                            Sotuvlar
+
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- BOG'CHA -->
+
+            <div>
+
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-2 px-3">
+                    Bog'cha
+                </p>
+
+                <ul class="space-y-1 text-xs">
+
+                    <li>
+                        <a href="{% url 'child_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-child mr-2"></i>
+
+                            Bolalar
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'bogcha_group_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-children mr-2"></i>
+
+                            Bog'cha guruhlari
+
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- BOSHQARUV -->
+
+            <div>
+
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-2 px-3">
+                    Boshqaruv
+                </p>
+
+                <ul class="space-y-1 text-xs">
+
+                    <li>
+                        <a href="{% url 'tenant_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-building mr-2"></i>
+
+                            Tashkilotlar
+
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'staff_list' tenant.category.slug tenant.id %}"
+                           class="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+
+                            <i class="fa-solid fa-users-gear mr-2"></i>
+
+                            Xodimlar
+
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </nav>
+
+    </div>
+
+
+    <!-- LOGOUT -->
+
+    <a href="{% url 'logout' %}"
+       class="flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-gray-800 rounded-lg font-medium text-xs">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        Chiqish
+
+    </a>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+<div class="flex-1 flex flex-col min-w-0">
+
+
+    <!-- HEADER -->
+
+    <header class="bg-white border-b px-8 py-4 flex items-center justify-between">
+
+        <div>
+
+            <p class="text-sm font-semibold text-gray-700">
+                Dashboard
+            </p>
+
+            <p class="text-[10px] text-gray-400">
+                {{ tenant.name }}
+            </p>
+
+        </div>
+
+
+        <div class="flex items-center gap-3">
+
+            <div class="w-9 h-9 bg-blue-900 text-white font-semibold rounded-full flex items-center justify-center text-sm">
+
+                {{ user_name|slice:":2"|upper }}
+
+            </div>
+
+
+            <div>
+
+                <p class="text-xs font-semibold text-gray-800">
+                    {{ user_name }}
+                </p>
+
+                <p class="text-[10px] text-gray-500">
+
+                    {% if is_super_admin %}
+                        Super Admin
+                    {% else %}
+                        Xodim
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- BODY -->
+
+    <main class="p-8 space-y-6 flex-1 overflow-y-auto">
+
+
+        <!-- WELCOME -->
+
+        <div class="flex justify-between items-center">
+
+            <div>
+
+                <h2 class="text-xl font-bold text-gray-800">
+                    Xush kelibsiz, {{ user_name }}!
+                </h2>
+
+                <p class="text-gray-500 text-xs">
+                    {{ tenant.name }} bo'yicha boshqaruv paneli
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'tenant_create' tenant.category.slug tenant.id %}"
+               class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Yangi Tashkilot Qo'shish
+
+            </a>
+
+        </div>
+
+
+
+        <!-- STATISTIKA -->
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+
+
+            <!-- O'QUVCHILAR -->
+
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center text-lg">
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                </div>
+
+                <div>
+
+                    <p class="text-xs text-gray-500">
+                        O'quvchilar
+                    </p>
+
+                    <p class="text-xl font-bold text-gray-800">
+                        {{ total_students }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- USTOZLAR -->
+
+            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-lg">
+
+                    <i class="fa-solid fa-chalkboard-user"></i>
+
+                </div>
+
+                <div>
+
+                    <p class="text-xs text-gray-500">
+                        Ustozlar
+                    </p>
+
+                    <p class="text-xl font-bold text-gray-800">
+                        {{ total_teachers }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- GURUHLAR -->
+
+            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-purple-500 text-white rounded-lg flex items-center justify-center text-lg">
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                </div>
+
+                <div>
+
+                    <p class="text-xs text-gray-500">
+                        Guruhlar
+                    </p>
+
+                    <p class="text-xl font-bold text-gray-800">
+                        {{ total_groups }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- BOLALAR -->
+
+            <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-orange-500 text-white rounded-lg flex items-center justify-center text-lg">
+
+                    <i class="fa-solid fa-child"></i>
+
+                </div>
+
+                <div>
+
+                    <p class="text-xs text-gray-500">
+                        Bolalar
+                    </p>
+
+                    <p class="text-xl font-bold text-gray-800">
+                        {{ total_children }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- JADVAL VA TEZKOR AMALLAR -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+
+            <!-- SO'NGGI O'QUVCHILAR -->
+
+            <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
+
+                <h3 class="font-bold text-sm text-gray-800">
+                    So'nggi qo'shilgan o'quvchilar
+                </h3>
+
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-left text-xs">
+
+                        <thead>
+
+                            <tr class="text-gray-400 border-b">
+
+                                <th class="pb-2 font-normal">
+                                    F.I.O
+                                </th>
+
+                                <th class="pb-2 font-normal">
+                                    Guruh
+                                </th>
+
+                                <th class="pb-2 font-normal">
+                                    Telefon
+                                </th>
+
+                                <th class="pb-2 font-normal">
+                                    Sana
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody class="divide-y">
+
+                            {% for student in recent_students %}
+
+                            <tr>
+
+                                <td class="py-2.5 font-medium text-gray-800">
+                                    {{ student.full_name }}
+                                </td>
+
+                                <td class="py-2.5 text-gray-500">
+                                    {{ student.group.name|default:"—" }}
+                                </td>
+
+                                <td class="py-2.5 text-gray-500">
+                                    {{ student.phone }}
+                                </td>
+
+                                <td class="py-2.5 text-gray-400">
+                                    {{ student.created_at|date:"d.m.Y" }}
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td colspan="4"
+                                    class="py-3 text-center text-gray-400">
+
+                                    Ma'lumotlar mavjud emas
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TEZKOR AMALLAR -->
+
+            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-3">
+
+                <h3 class="font-bold text-sm text-gray-800 mb-2">
+                    Tezkor amallar
+                </h3>
+
+
+                <a href="{% url 'tenant_create' tenant.category.slug tenant.id %}"
+                   class="flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-xs font-medium text-blue-700">
+
+                    <span>
+
+                        <i class="fa-solid fa-building-circle-check text-blue-600 mr-2"></i>
+
+                        Tashkilot qo'shish
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right text-[10px] text-blue-400"></i>
+
+                </a>
+
+
+                <a href="{% url 'tenant_student_create' tenant.category.slug tenant.id %}"
+                   class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium text-gray-700">
+
+                    <span>
+
+                        <i class="fa-solid fa-user-plus text-blue-600 mr-2"></i>
+
+                        O'quvchi qo'shish
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+
+                </a>
+
+
+                <a href="{% url 'payment_create' tenant.category.slug tenant.id %}"
+                   class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium text-gray-700">
+
+                    <span>
+
+                        <i class="fa-solid fa-money-bill-wave text-emerald-600 mr-2"></i>
+
+                        To'lov qabul qilish
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+
+                </a>
+
+
+                <a href="{% url 'teacher_create' tenant.category.slug tenant.id %}"
+                   class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-medium text-gray-700">
+
+                    <span>
+
+                        <i class="fa-solid fa-chalkboard-user text-purple-600 mr-2"></i>
+
+                        Ustoz qo'shish
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

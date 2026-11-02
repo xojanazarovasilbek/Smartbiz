@@ -248,3 +248,115 @@ class PickupLogAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return _tenant_scoped_queryset(request, super().get_queryset(request))
+
+
+
+from django.contrib import admin
+
+from .models import (
+    GugurtProduct,
+    GugurtImportBatch,
+    GugurtRegion,
+    GugurtDealer,
+    GugurtDistribution,
+)
+
+
+@admin.register(GugurtProduct)
+class GugurtProductAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "tenant",
+        "stock_kg_display",
+        "price_per_kg",
+        "is_active",
+    )
+    list_filter = ("tenant", "is_active")
+    search_fields = ("name",)
+
+    @admin.display(description="Qoldiq")
+    def stock_kg_display(self, obj):
+        kg = obj.stock_kg
+        tonna = kg / 1000
+        return f"{kg} kg | {tonna} tonna"
+
+
+@admin.register(GugurtImportBatch)
+class GugurtImportBatchAdmin(admin.ModelAdmin):
+    list_display = (
+        "batch_number",
+        "tenant",
+        "product",
+        "quantity_display",
+        "country",
+        "import_date",
+        "cost_per_kg_display",
+    )
+    list_filter = ("tenant", "country", "import_date")
+    search_fields = (
+        "batch_number",
+        "product__name",
+    )
+
+    @admin.display(description="Miqdor")
+    def quantity_display(self, obj):
+        return f"{obj.quantity_kg} kg | {obj.quantity_tonna} tonna"
+
+    @admin.display(description="1 kg tannarx")
+    def cost_per_kg_display(self, obj):
+        return f"{obj.cost_per_kg:.2f}"
+
+
+@admin.register(GugurtRegion)
+class GugurtRegionAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "tenant",
+    )
+    list_filter = ("tenant",)
+    search_fields = ("name",)
+
+
+@admin.register(GugurtDealer)
+class GugurtDealerAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "region",
+        "tenant",
+        "phone",
+        "balance",
+        "is_active",
+    )
+    list_filter = (
+        "tenant",
+        "region",
+        "is_active",
+    )
+    search_fields = (
+        "name",
+        "phone",
+    )
+
+
+@admin.register(GugurtDistribution)
+class GugurtDistributionAdmin(admin.ModelAdmin):
+    list_display = (
+        "batch",
+        "dealer",
+        "quantity_display",
+        "status",
+        "dispatch_date",
+    )
+    list_filter = (
+        "tenant",
+        "status",
+        "dispatch_date",
+    )
+    search_fields = (
+        "batch__batch_number",
+        "dealer__name",
+    )
+
+    @admin.display(description="Yuborilgan miqdor")
+    def quantity_display(self, obj):
+        return f"{obj.quantity_kg} kg | {obj.quantity_tonna} tonna"

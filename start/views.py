@@ -1,5 +1,5 @@
 from decimal import Decimal, InvalidOperation
-
+from .forms import GugurtImportForm, GugurtDealerForm, GugurtDistributionForm
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import models
@@ -12,7 +12,177 @@ from .models import (
     Purchase, Sale, SaleItem, Student, Teacher, Tenant, TenantUser,
     QurilishCategory, QurilishProduct, QurilishSale, QurilishSaleItem, QurilishPurchase,
     BogchaGroup, Child, AuthorizedPickup, ChildDailyLog, MealServing, MealLog, PickupLog,
+    GugurtProduct,
+    GugurtImportBatch,
+    GugurtRegion,
+    GugurtDealer,
+    GugurtDistribution,
 )
+
+
+
+
+@login_required
+def custom_dashboard(request):
+    """
+    /dashboard12/ orqali kiriladigan asosiy dashboard.
+
+    Tenant avtomatik aniqlanadi.
+    'main' kabi eski default slug ishlatilmaydi.
+    """
+
+    user = request.user
+
+    # Super Admin bo'lsa:
+    # bazadagi mavjud tenantlardan birinchisini olamiz.
+    if _is_super_admin(user):
+        tenant = Tenant.objects.select_related("category").first()
+    else:
+        # Oddiy foydalanuvchi faqat o'z tenantiga kiradi
+        if not user.tenant_id:
+            raise PermissionDenied(
+                "Sizga hech qanday tashkilot biriktirilmagan."
+            )
+
+        tenant = get_object_or_404(
+            Tenant.objects.select_related("category"),
+            id=user.tenant_id
+        )
+
+    # Umuman tenant bo'lmasa
+    if not tenant:
+        return redirect("dashboard_categories")
+
+    # Statistikalar
+    total_students = Student.objects.filter(
+        tenant=tenant
+    ).count()
+
+    total_teachers = Teacher.objects.filter(
+        tenant=tenant
+    ).count()
+
+    total_groups = Group.objects.filter(
+        tenant=tenant
+    ).count()
+
+    total_children = Child.objects.filter(
+        tenant=tenant
+    ).count()
+
+    recent_students = Student.objects.filter(
+        tenant=tenant
+    ).order_by("-id")[:5]
+
+    # Super Admin barcha tashkilotlarni ko'rsin
+    if _is_super_admin(user):
+        managed_tenants = Tenant.objects.select_related(
+            "category"
+        ).all()
+    else:
+        managed_tenants = Tenant.objects.filter(
+            id=tenant.id
+        ).select_related("category")
+
+    context = {
+        "user_name": user.first_name or user.username,
+
+        "is_super_admin": _is_super_admin(user),
+
+        # MUHIM:
+        # haqiqiy tenant ma'lumotlari
+        "tenant": tenant,
+        "slug": tenant.category.slug,
+        "tenant_id": tenant.id,
+
+        # Statistikalar
+        "total_students": total_students,
+        "total_teachers": total_teachers,
+        "total_groups": total_groups,
+        "total_children": total_children,
+        "recent_students": recent_students,
+
+        # Tashkilotlar
+        "managed_tenants": managed_tenants,
+    }
+
+    return render(
+        request,
+        "dashboard/index.html",
+        context
+    )
+
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Tenant
+
+# 1. Barcha Tenantlar (Tashkilotlar) ro'yxati
+@login_required
+def tenant_list(request, slug='main', tenant_id=1):
+    tenants = Tenant.objects.all()
+    context = {
+        'tenants': tenants,
+        'slug': slug,
+        'tenant_id': tenant_id,
+        'user_name': request.user.first_name or request.user.username,
+    }
+    return render(request, 'dashboard/tenant_list.html', context)
+
+
+# 2. Yangi Tenant (Tashkilot) qo'shish
+@login_required
+def tenant_create(request, slug='main', tenant_id=1):
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        category_id = request.POST.get('category_id')
+
+        # Agar kategoriya tanlanmagan bo'lsa, birinchi kategoriyani yoki mavjud bo'lmasa yangisini oladi
+        if not category_id:
+            category = Category.objects.first()
+            if not category:
+                category = Category.objects.create(name="Asosiy", slug="main")
+            category_id = category.id
+
+        if name:
+            Tenant.objects.create(
+                name=name,
+                category_id=category_id
+            )
+            return redirect('tenant_list', slug=slug, tenant_id=tenant_id)
+
+    context = {
+        'categories': categories,
+        'slug': slug,
+        'tenant_id': tenant_id,
+        'user_name': request.user.first_name or request.user.username,
+    }
+    return render(request, 'dashboard/tenant_create.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def _is_super_admin(user):
@@ -128,6 +298,14 @@ def tenant_dashboard(request, slug, tenant_id):
         return qur_dashboard(request, tenant)
     if tenant.category.module_type == Category.MODULE_BOGCHA:
         return bogcha_dashboard(request, tenant)
+    if tenant.category.module_type == 'prarab' or tenant.category.slug == 'prorab':
+        return redirect('qurilish_dashboard', slug=slug, tenant_id=tenant_id)
+    if tenant.category.module_type == Category.MODULE_GUGURT:
+        return redirect(
+            "gugurt_dashboard",
+            slug=tenant.category.slug,
+            tenant_id=tenant.id,
+    )
 
     today = timezone.now().date()
 
@@ -2172,3 +2350,808 @@ def audit_log_list(request, slug, tenant_id):
     tenant = _get_accessible_tenant(request, slug, tenant_id)
     logs = AuditLog.objects.filter(tenant=tenant)[:100]
     return render(request, "start/audit_log_list.html", {"tenant": tenant, "logs": logs})
+
+
+
+
+
+@login_required
+def gugurt_dashboard(request, slug, tenant_id):
+    tenant = _get_accessible_tenant(request, slug, tenant_id)
+
+    # Faqat GUGURT moduli uchun
+    if tenant.category.module_type != Category.MODULE_GUGURT:
+        raise PermissionDenied(
+            "Bu tenant Gugurt moduliga tegishli emas."
+        )
+
+    # Subscription tekshirish
+    if not _is_super_admin(request.user):
+        subscription = getattr(tenant, "subscription", None)
+
+        if not subscription or not subscription.is_valid:
+            return HttpResponse(
+                """
+                <div style="
+                    max-width:600px;
+                    margin:100px auto;
+                    padding:40px;
+                    text-align:center;
+                    font-family:Arial;
+                    border-radius:20px;
+                    box-shadow:0 10px 40px rgba(0,0,0,.1);
+                ">
+                    <h1>🔒 Obuna muddati tugagan</h1>
+
+                    <p>
+                        Ushbu Gugurt biznes modulidan foydalanish uchun
+                        obunani yangilang.
+                    </p>
+
+                    <a href="/dashboard/"
+                       style="
+                       display:inline-block;
+                       padding:12px 25px;
+                       background:#111;
+                       color:white;
+                       text-decoration:none;
+                       border-radius:10px;
+                       ">
+                       Dashboardga qaytish
+                    </a>
+                </div>
+                """,
+                status=403,
+            )
+
+    # =========================
+    # MAHSULOTLAR
+    # =========================
+
+    products = GugurtProduct.objects.filter(
+        tenant=tenant,
+        is_active=True,
+    )
+
+    # =========================
+    # IMPORT PARTIYALAR
+    # =========================
+
+    batches = GugurtImportBatch.objects.filter(
+        tenant=tenant
+    ).select_related("product").order_by(
+        "-import_date",
+        "-id"
+    )
+
+    # =========================
+    # 12 TA VILOYAT
+    # =========================
+
+    existing_regions = set(
+        GugurtRegion.objects.filter(
+            tenant=tenant
+        ).values_list(
+            "name",
+            flat=True
+        )
+    )
+
+    for code, name in GugurtRegion.REGION_CHOICES:
+
+        if code not in existing_regions:
+            GugurtRegion.objects.create(
+                tenant=tenant,
+                name=code,
+            )
+
+    regions = GugurtRegion.objects.filter(
+        tenant=tenant
+    ).order_by("name")
+
+    # =========================
+    # DEALERLAR
+    # =========================
+
+    dealers = GugurtDealer.objects.filter(
+        tenant=tenant,
+        is_active=True,
+    ).select_related("region")
+
+    # =========================
+    # TARQATISHLAR
+    # =========================
+
+    distributions = GugurtDistribution.objects.filter(
+        tenant=tenant
+    ).select_related(
+        "batch",
+        "batch__product",
+        "dealer",
+        "dealer__region",
+    ).order_by(
+        "-dispatch_date",
+        "-id"
+    )
+
+    # =========================
+    # UMUMIY OMBOR
+    # =========================
+
+    total_stock_kg = sum(
+        (
+            product.stock_kg
+            for product in products
+        ),
+        Decimal("0")
+    )
+
+    # =========================
+    # JAMI IMPORT
+    # =========================
+
+    total_import_kg = sum(
+        (
+            batch.quantity_kg
+            for batch in batches
+        ),
+        Decimal("0")
+    )
+
+    # =========================
+    # JAMI TARQATILGAN
+    # =========================
+
+    total_distribution_kg = sum(
+        (
+            distribution.quantity_kg
+            for distribution in distributions
+            if distribution.status in [
+                "sent",
+                "received"
+            ]
+        ),
+        Decimal("0")
+    )
+
+    # =========================
+    # VILOYATLAR STATISTIKASI
+    # =========================
+
+    region_stats = []
+
+    for region in regions:
+
+        distributions_region = distributions.filter(
+            dealer__region=region,
+            status__in=[
+                "sent",
+                "received"
+            ],
+        )
+
+        sent_kg = sum(
+            (
+                item.quantity_kg
+                for item in distributions_region
+            ),
+            Decimal("0")
+        )
+
+        dealer_count_region = dealers.filter(
+            region=region
+        ).count()
+
+        region_stats.append({
+            "region": region,
+            "name": region.get_name_display(),
+            "kg": sent_kg,
+            "tonna": sent_kg / Decimal("1000"),
+            "dealer_count": dealer_count_region,
+        })
+
+    # =========================
+    # CONTEXT
+    # =========================
+
+    context = {
+        "tenant": tenant,
+
+        "products": products,
+        "batches": batches,
+        "regions": regions,
+        "dealers": dealers,
+        "distributions": distributions,
+
+        # Ombor
+        "total_stock_kg": total_stock_kg,
+        "total_stock_tonna": (
+            total_stock_kg / Decimal("1000")
+        ),
+
+        # Import
+        "total_import_kg": total_import_kg,
+        "total_import_tonna": (
+            total_import_kg / Decimal("1000")
+        ),
+
+        # Tarqatish
+        "total_distribution_kg": total_distribution_kg,
+        "total_distribution_tonna": (
+            total_distribution_kg / Decimal("1000")
+        ),
+
+        # Dealer
+        "dealer_count": dealers.count(),
+
+        # Viloyatlar
+        "region_stats": region_stats,
+    }
+
+    return render(
+        request,
+        "start/gugurt_dashboard.html",
+        context,
+    )
+
+
+
+def gugurt_import_create(request, slug, tenant_id):
+    tenant = _get_accessible_tenant(request, slug, tenant_id)
+
+    # Faqat GUGURT moduli
+    if tenant.category.module_type != Category.MODULE_GUGURT:
+        raise PermissionDenied("Bu sahifa GUGURT moduli uchun.")
+
+    # Super admin subscriptionga qaramaydi
+    if not _is_super_admin(request.user):
+        subscription = getattr(tenant, "subscription", None)
+
+        if not subscription or not subscription.is_valid:
+            return HttpResponse(
+                """
+                <div style="
+                    max-width:600px;
+                    margin:100px auto;
+                    text-align:center;
+                    font-family:Arial;
+                ">
+                    <h1>🔒 Obuna tugagan</h1>
+                    <p>Ushbu tenant uchun aktiv obuna mavjud emas.</p>
+                </div>
+                """,
+                status=403,
+            )
+
+    if request.method == "POST":
+        form = GugurtImportForm(
+            request.POST,
+            tenant=tenant
+        )
+
+        if form.is_valid():
+
+            with transaction.atomic():
+
+                # Mahsulotni tenant bo‘yicha tekshiramiz
+                product_id = form.cleaned_data["product"].id
+
+                product = get_object_or_404(
+                    GugurtProduct.objects.select_for_update(),
+                    id=product_id,
+                    tenant=tenant,
+                    is_active=True,
+                )
+
+                quantity_kg = form.cleaned_data["quantity_kg"]
+
+                # Import batch yaratish
+                batch = GugurtImportBatch(
+                    tenant=tenant,
+                    product=product,
+                    batch_number=form.cleaned_data["batch_number"],
+                    country=form.cleaned_data["country"],
+                    quantity_kg=quantity_kg,
+                    product_cost=form.cleaned_data["product_cost"],
+                    transport_cost=form.cleaned_data["transport_cost"],
+                    customs_cost=form.cleaned_data["customs_cost"],
+                    other_cost=form.cleaned_data["other_cost"],
+                    import_date=form.cleaned_data["import_date"],
+                    note=form.cleaned_data["note"],
+                )
+
+                batch.save()
+
+                # Omborga qo‘shish
+                product.stock_kg += quantity_kg
+                product.save(update_fields=["stock_kg"])
+
+            messages.success(
+                request,
+                f"{quantity_kg:,.2f} kg mahsulot omborga qo‘shildi."
+            )
+
+            return redirect(
+                "gugurt_dashboard",
+                slug=tenant.category.slug,
+                tenant_id=tenant.id,
+            )
+
+    else:
+        form = GugurtImportForm(
+            tenant=tenant
+        )
+
+    return render(
+        request,
+        "start/gugurt_import.html",
+        {
+            "tenant": tenant,
+            "form": form,
+        }
+    )
+
+
+
+def gugurt_dealer_create(request, slug, tenant_id):
+
+    tenant = _get_accessible_tenant(
+        request,
+        slug,
+        tenant_id
+    )
+
+    if tenant.category.module_type != Category.MODULE_GUGURT:
+        raise PermissionDenied(
+            "Bu sahifa GUGURT moduli uchun."
+        )
+
+    if request.method == "POST":
+
+        form = GugurtDealerForm(
+            request.POST,
+            tenant=tenant
+        )
+
+        if form.is_valid():
+
+            dealer = form.save(commit=False)
+
+            dealer.tenant = tenant
+
+            dealer.save()
+
+            messages.success(
+                request,
+                f"{dealer.name} muvaffaqiyatli qo‘shildi."
+            )
+
+            return redirect(
+                "gugurt_dealers",
+                slug=tenant.category.slug,
+                tenant_id=tenant.id,
+            )
+
+    else:
+
+        form = GugurtDealerForm(
+            tenant=tenant
+        )
+
+    return render(
+        request,
+        "start/gugurt_dealer_form.html",
+        {
+            "tenant": tenant,
+            "form": form,
+        }
+    )
+def gugurt_dealers(request, slug, tenant_id):
+
+    tenant = _get_accessible_tenant(
+        request,
+        slug,
+        tenant_id
+    )
+
+    if tenant.category.module_type != Category.MODULE_GUGURT:
+        raise PermissionDenied(
+            "Bu sahifa GUGURT moduli uchun."
+        )
+
+    dealers = GugurtDealer.objects.filter(
+        tenant=tenant
+    ).select_related(
+        "region"
+    ).order_by("-id")
+
+    return render(
+        request,
+        "start/gugurt_dealers.html",
+        {
+            "tenant": tenant,
+            "dealers": dealers,
+        }
+    )
+
+def gugurt_distribution_create(request, slug, tenant_id):
+
+    tenant = _get_accessible_tenant(
+        request,
+        slug,
+        tenant_id
+    )
+
+    if tenant.category.module_type != Category.MODULE_GUGURT:
+        raise PermissionDenied(
+            "Bu sahifa GUGURT moduli uchun."
+        )
+
+    # Subscription
+    if not _is_super_admin(request.user):
+
+        subscription = getattr(
+            tenant,
+            "subscription",
+            None
+        )
+
+        if not subscription or not subscription.is_valid:
+
+            return HttpResponse(
+                """
+                <div style="
+                    max-width:600px;
+                    margin:100px auto;
+                    text-align:center;
+                    font-family:Arial;
+                ">
+                    <h1>🔒 Obuna tugagan</h1>
+                    <p>
+                        Ushbu tenant uchun
+                        aktiv obuna mavjud emas.
+                    </p>
+                </div>
+                """,
+                status=403
+            )
+
+    if request.method == "POST":
+
+        form = GugurtDistributionForm(
+            request.POST,
+            tenant=tenant
+        )
+
+        if form.is_valid():
+
+            batch_id = form.cleaned_data["batch"].id
+            dealer_id = form.cleaned_data["dealer"].id
+            quantity_kg = form.cleaned_data["quantity_kg"]
+
+            with transaction.atomic():
+
+                # Partiyani bloklaymiz
+                batch = get_object_or_404(
+                    GugurtImportBatch.objects.select_for_update(),
+                    id=batch_id,
+                    tenant=tenant,
+                )
+
+                # Mahsulotni bloklaymiz
+                product = get_object_or_404(
+                    GugurtProduct.objects.select_for_update(),
+                    id=batch.product_id,
+                    tenant=tenant,
+                    is_active=True,
+                )
+
+                # Dealerni tekshiramiz
+                dealer = get_object_or_404(
+                    GugurtDealer,
+                    id=dealer_id,
+                    tenant=tenant,
+                    is_active=True,
+                )
+
+                # Omborda yetarli mahsulot bormi?
+                if quantity_kg > product.stock_kg:
+
+                    form.add_error(
+                        "quantity_kg",
+                        (
+                            f"Omborda yetarli mahsulot yo‘q. "
+                            f"Qoldiq: {product.stock_kg} kg."
+                        )
+                    )
+
+                else:
+
+                    # Shu batchdan oldin qancha yuborilgan?
+                    already_sent = sum(
+                        (
+                            item.quantity_kg
+                            for item in
+                            GugurtDistribution.objects.filter(
+                                batch=batch,
+                                status__in=[
+                                    "sent",
+                                    "received",
+                                ]
+                            )
+                        ),
+                        Decimal("0")
+                    )
+
+                    batch_remaining = (
+                        batch.quantity_kg -
+                        already_sent
+                    )
+
+                    # Partiyada yetarli mahsulot bormi?
+                    if quantity_kg > batch_remaining:
+
+                        form.add_error(
+                            "quantity_kg",
+                            (
+                                f"Bu partiyada faqat "
+                                f"{batch_remaining} kg "
+                                f"qolgan."
+                            )
+                        )
+
+                    else:
+
+                        distribution = form.save(
+                            commit=False
+                        )
+
+                        distribution.tenant = tenant
+                        distribution.batch = batch
+                        distribution.dealer = dealer
+
+                        distribution.save()
+
+                        # Faqat yuborilgan/qabul qilingan
+                        # statuslarda ombor kamayadi
+                        if distribution.status in [
+                            "sent",
+                            "received",
+                        ]:
+
+                            product.stock_kg -= quantity_kg
+
+                            product.save(
+                                update_fields=[
+                                    "stock_kg"
+                                ]
+                            )
+
+                        messages.success(
+                            request,
+                            (
+                                f"{quantity_kg:,.2f} kg "
+                                f"{dealer.name} dealeriga "
+                                f"yuborildi."
+                            )
+                        )
+
+                        return redirect(
+                            "gugurt_dashboard",
+                            slug=tenant.category.slug,
+                            tenant_id=tenant.id,
+                        )
+
+    else:
+
+        form = GugurtDistributionForm(
+            tenant=tenant
+        )
+
+    return render(
+        request,
+        "start/gugurt_distribution_form.html",
+        {
+            "tenant": tenant,
+            "form": form,
+        }
+    )
+
+
+
+
+
+
+
+
+
+
+# prorab qurilishlari
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from .models import Tenant, ConstructionSite, ConstructionMaterial, MaterialReceipt, MaterialConsumption
+
+# 1. Qurilish Ob'yektlari va Materiallar Balansi (Qoldig'i)
+@login_required
+def qurilish_sites_list(request, slug='main', tenant_id=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    sites = ConstructionSite.objects.filter(tenant=tenant)
+    materials = ConstructionMaterial.objects.filter(tenant=tenant)
+
+    context = {
+        'sites': sites,
+        'materials': materials,
+        'slug': slug,
+        'tenant_id': tenant_id,
+        'user_name': request.user.first_name or request.user.username,
+    }
+    return render(request, 'dashboard/qurilish/sites_list.html', context)
+
+
+# 2. Material Kirimi (Prarab/Ta'minotchi ob'yektga yuk kelganda kiritadi)
+@login_required
+def material_receipt_create(request, slug='main', tenant_id=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    sites = ConstructionSite.objects.filter(tenant=tenant)
+    materials = ConstructionMaterial.objects.filter(tenant=tenant)
+
+    if request.method == 'POST':
+        site_id = request.POST.get('site_id')
+        material_id = request.POST.get('material_id')
+        quantity = request.POST.get('quantity')
+        supplier_name = request.POST.get('supplier_name')
+        date = request.POST.get('date')
+        note = request.POST.get('note')
+
+        if site_id and material_id and quantity:
+            MaterialReceipt.objects.create(
+                tenant=tenant,
+                site_id=site_id,
+                material_id=material_id,
+                quantity=quantity,
+                supplier_name=supplier_name,
+                date=date,
+                note=note
+            )
+            return redirect('qurilish_sites_list', slug=slug, tenant_id=tenant_id)
+
+    context = {
+        'sites': sites,
+        'materials': materials,
+        'slug': slug,
+        'tenant_id': tenant_id,
+    }
+    return render(request, 'dashboard/qurilish/receipt_create.html', context)
+
+
+# 3. Material Chiqimi (Prarab ob'yektda qancha ishlatganini kiritadi)
+@login_required
+def material_consumption_create(request, slug='main', tenant_id=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    sites = ConstructionSite.objects.filter(tenant=tenant)
+    materials = ConstructionMaterial.objects.filter(tenant=tenant)
+
+    if request.method == 'POST':
+        site_id = request.POST.get('site_id')
+        material_id = request.POST.get('material_id')
+        quantity = request.POST.get('quantity')
+        date = request.POST.get('date')
+        used_for = request.POST.get('used_for')
+
+        if site_id and material_id and quantity:
+            MaterialConsumption.objects.create(
+                tenant=tenant,
+                site_id=site_id,
+                material_id=material_id,
+                quantity=quantity,
+                date=date,
+                used_for=used_for,
+                prarab_name=request.user.get_full_name() or request.user.username
+            )
+            return redirect('qurilish_sites_list', slug=slug, tenant_id=tenant_id)
+
+    context = {
+        'sites': sites,
+        'materials': materials,
+        'slug': slug,
+        'tenant_id': tenant_id,
+    }
+    return render(request, 'dashboard/qurilish/consumption_create.html', context)
+
+
+
+
+
+
+
+@login_required
+def qurilish_pro_dashboard(request, slug='main', tenant_id=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    sites = ConstructionSite.objects.filter(tenant=tenant)
+    materials = ConstructionMaterial.objects.filter(tenant=tenant)
+    
+    # Oxirgi kirim va chiqimlar
+    recent_receipts = MaterialReceipt.objects.filter(tenant=tenant).order_by('-date')[:5]
+    recent_consumptions = MaterialConsumption.objects.filter(tenant=tenant).order_by('-date')[:5]
+
+    context = {
+        'tenant': tenant,
+        'slug': slug,
+        'tenant_id': tenant_id,
+        'sites': sites,
+        'materials': materials,
+        'recent_receipts': recent_receipts,
+        'recent_consumptions': recent_consumptions,
+        'user_name': request.user.first_name or request.user.username,
+    }
+    return render(request, 'dashboard/qurilish/dashboard.html', context)
+
+
+
+@login_required
+def qurilish_site_create(request, slug='main', tenant_id=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        address = request.POST.get('address')
+        
+        if name:
+            ConstructionSite.objects.create(
+                tenant=tenant,
+                name=name,
+                address=address
+            )
+            return redirect('qurilish_sites_list', slug=slug, tenant_id=tenant_id)
+            
+    context = {
+        'slug': slug,
+        'tenant_id': tenant_id,
+    }
+    return render(request, 'dashboard/qurilish/site_create.html', context)
+
+
+
+@login_required
+def qurilish_material_create(request, slug='main', tenant_id=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        unit = request.POST.get('unit', 'kg') # o'lchov birligi (kg, tonna, dona, metr va h.k.)
+        
+        if name:
+            ConstructionMaterial.objects.create(
+                tenant=tenant,
+                name=name,
+                unit=unit
+            )
+            return redirect('qurilish_sites_list', slug=slug, tenant_id=tenant_id)
+            
+    context = {
+        'slug': slug,
+        'tenant_id': tenant_id,
+    }
+    return render(request, 'dashboard/qurilish/material_create.html', context)
+
+
+@login_required
+def qurilish_site_detail(request, slug='main', tenant_id=1, pk=1):
+    tenant = get_object_or_404(Tenant, id=tenant_id)
+    site = get_object_or_404(ConstructionSite, id=pk, tenant=tenant)
+    
+    # Shu ob'yektga tegishli kirim va chiqimlar
+    receipts = MaterialReceipt.objects.filter(site=site, tenant=tenant).order_by('-date')
+    consumptions = MaterialConsumption.objects.filter(site=site, tenant=tenant).order_by('-date')
+    
+    context = {
+        'slug': slug,
+        'tenant_id': tenant_id,
+        'tenant': tenant,
+        'site': site,
+        'receipts': receipts,
+        'consumptions': consumptions,
+    }
+    return render(request, 'dashboard/qurilish/site_detail.html', context)

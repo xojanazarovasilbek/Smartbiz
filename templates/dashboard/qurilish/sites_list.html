@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qurilish Ob'yektlari va Logistika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+
+    <!-- Sidebar / Orqaga qaytish -->
+    <aside class="w-64 bg-[#0a192f] text-white flex flex-col justify-between p-4 hidden sm:flex">
+        <div>
+            <div class="flex items-center gap-3 mb-8 px-2">
+                <div class="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-building-shield"></i></div>
+                <div>
+                    <h1 class="text-sm font-bold">SmartBiz Qurilish</h1>
+                    <span class="text-[10px] text-amber-400">Prarab & Material Moduli</span>
+                </div>
+            </div>
+            <nav class="space-y-2 text-xs">
+                <a href="{% url 'qurilish_dashboard' slug tenant_id %}" class="flex items-center gap-3 text-gray-300 hover:bg-gray-800 px-4 py-2.5 rounded-xl">
+                    <i class="fa-solid fa-gauge"></i> Dashboardga Qaytish
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <header class="bg-white border-b px-6 py-4 flex justify-between items-center">
+            <h2 class="text-sm font-bold text-gray-800">Qurilish Ob'yektlari Boshqaruvi</h2>
+            <div class="space-x-2">
+                <a href="{% url 'qurilish_site_create' slug tenant_id %}" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-4 py-2 rounded-xl font-medium">
+                    <i class="fa-solid fa-plus mr-1"></i> Ob'yekt Qo'shish
+                </a>
+                <a href="{% url 'material_receipt_create' slug tenant_id %}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-xl font-medium">
+                    <i class="fa-solid fa-truck-ramp-box mr-1"></i> Kirim
+                </a>
+                <a href="{% url 'material_consumption_create' slug tenant_id %}" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-2 rounded-xl font-medium">
+                    <i class="fa-solid fa-minus mr-1"></i> Chiqim
+                </a>
+                <a href="{% url 'qurilish_material_create' slug tenant_id %}" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2 rounded-xl font-medium">
+                    <i class="fa-solid fa-box-open mr-1"></i> Material Qo'shish
+                </a>
+            </div>
+        </header>
+
+        <main class="p-6 space-y-6">
+            <!-- Ob'yektlar Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for site in sites %}
+                <a href="{% url 'qurilish_site_detail' slug tenant_id site.id %}" class="block bg-white p-5 rounded-2xl border shadow-sm space-y-4 hover:border-amber-500 transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-sm text-gray-800">{{ site.name }}</h3>
+                            <p class="text-xs text-gray-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i> {{ site.address|default:"Manzil kiritilmagan" }}</p>
+                        </div>
+                        <span class="bg-amber-100 text-amber-700 text-[10px] font-semibold px-2.5 py-1 rounded-full">Ob'yekt</span>
+                    </div>
+
+                    <div class="border-t pt-3 space-y-2">
+                        <p class="text-xs font-bold text-gray-600">Materiallar Harakati:</p>
+                        <div class="text-[11px] text-gray-500 bg-gray-50 p-3 rounded-xl space-y-1">
+                            <p>📦 Jami kelgan kirimlar: <span class="font-semibold text-gray-700">{{ site.materialreceipt_set.count }} ta</span></p>
+                            <p>🛠 Jami bajarilgan chiqimlar: <span class="font-semibold text-gray-700">{{ site.materialconsumption_set.count }} ta</span></p>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="col-span-full bg-white p-12 rounded-2xl border text-center text-gray-400 text-xs space-y-3">
+                    <p>Hozircha qurilish ob'yektlari qo'shilmagan.</p>
+                    <div>
+                        <a href="{% url 'qurilish_site_create' slug tenant_id %}" class="inline-block bg-amber-600 text-white text-xs px-4 py-2 rounded-xl font-medium">
+                            <i class="fa-solid fa-plus mr-1"></i> Birinchi Ob'yektni Qo'shish
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>

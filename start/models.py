@@ -10,19 +10,24 @@ class Category(models.Model):
     MODULE_CRM = "crm"
     MODULE_POS = "pos"
     MODULE_QUR = "qur"
+    MODULE_PRARAB = "prarab"  # <-- Prarablar moduli qo'shildi
     MODULE_BOGCHA = "bogcha"
+    MODULE_GUGURT = "gugurt"
+    
     MODULE_TYPE_CHOICES = [
         (MODULE_CRM, "CRM (oquv markaz, klinika va h.k.)"),
         (MODULE_POS, "POS (dokon, market)"),
         (MODULE_QUR, "QUR (qurilish mollar dokoni)"),
+        (MODULE_PRARAB, "Prarab va Qurilish logistikasi"),  # <-- Admin paneldagi nomi
         (MODULE_BOGCHA, "BOGCHA (bogcha, xususiy maktab)"),
+        (MODULE_GUGURT, "GUGURT (import va tarqatish)"),
     ]
 
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     module_type = models.CharField(
         max_length=10, choices=MODULE_TYPE_CHOICES, default=MODULE_CRM,
-        help_text="Qaysi tizim ishlatilishini belgilaydi: CRM yoki POS.",
+        help_text="Qaysi tizim ishlatilishini belgilaydi: CRM, POS yoki Prarab.",
     )
     is_available = models.BooleanField(
         default=False,
@@ -670,3 +675,339 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.action} ({self.created_at})"
+
+
+
+# ---------- GUGURT / TARQATISH MODELLARI ----------
+
+class GugurtProduct(models.Model):
+    """Gugurt mahsuloti. Hisob kg/tonnada yuritiladi."""
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name="gugurt_products"
+    )
+
+    name = models.CharField(max_length=200)
+
+    price_per_kg = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0,
+        help_text="1 kg sotuv narxi"
+    )
+
+    stock_kg = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0,
+        help_text="Ombordagi qoldiq kg"
+    )
+
+    min_stock_kg = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=100,
+        help_text="Minimal qoldiq kg"
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def stock_tonna(self):
+        return self.stock_kg / 1000
+
+    @property
+    def is_low_stock(self):
+        return self.stock_kg <= self.min_stock_kg
+
+    def __str__(self):
+        return self.name
+
+class GugurtImportBatch(models.Model):
+    """Xitoydan kelgan gugurt import partiyasi."""
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name="gugurt_import_batches"
+    )
+
+    product = models.ForeignKey(
+        GugurtProduct,
+        on_delete=models.PROTECT,
+        related_name="import_batches"
+    )
+
+    batch_number = models.CharField(
+        max_length=100,
+        help_text="Masalan: IMP-2026-001"
+    )
+
+    country = models.CharField(
+        max_length=100,
+        default="Xitoy"
+    )
+
+    quantity_kg = models.DecimalField(
+        max_digits=14,
+        decimal_places=2
+    )
+
+    product_cost = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        default=0,
+        help_text="Mahsulotning umumiy narxi"
+    )
+
+    transport_cost = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        default=0
+    )
+
+    customs_cost = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        default=0
+    )
+
+    other_cost = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        default=0
+    )
+
+    import_date = models.DateField(
+        default=timezone.now
+    )
+
+    note = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    @property
+    def total_cost(self):
+        return (
+            self.product_cost
+            + self.transport_cost
+            + self.customs_cost
+            + self.other_cost
+        )
+
+    @property
+    def cost_per_kg(self):
+        if self.quantity_kg:
+            return self.total_cost / self.quantity_kg
+        return 0
+
+    @property
+    def quantity_tonna(self):
+        return self.quantity_kg / 1000
+
+    def __str__(self):
+        return f"{self.batch_number} - {self.product.name}"
+
+class GugurtRegion(models.Model):
+    """Gugurt tarqatiladigan hudud."""
+
+    REGION_CHOICES = [
+        ("toshkent", "Toshkent"),
+        ("samarkand", "Samarqand"),
+        ("buxoro", "Buxoro"),
+        ("andijon", "Andijon"),
+        ("fargona", "Farg'ona"),
+        ("namangan", "Namangan"),
+        ("qashqadaryo", "Qashqadaryo"),
+        ("surxondaryo", "Surxondaryo"),
+        ("jizzax", "Jizzax"),
+        ("sirdaryo", "Sirdaryo"),
+        ("navoiy", "Navoiy"),
+        ("xorazm", "Xorazm"),
+    ]
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name="gugurt_regions"
+    )
+
+    name = models.CharField(
+        max_length=100,
+        choices=REGION_CHOICES
+    )
+
+    def __str__(self):
+        return self.get_name_display()
+
+class GugurtDealer(models.Model):
+    """Viloyatdagi diler yoki mijoz."""
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name="gugurt_dealers"
+    )
+
+    region = models.ForeignKey(
+        GugurtRegion,
+        on_delete=models.PROTECT,
+        related_name="dealers"
+    )
+
+    name = models.CharField(max_length=200)
+
+    phone = models.CharField(
+        max_length=30,
+        blank=True
+    )
+
+    address = models.CharField(
+        max_length=300,
+        blank=True
+    )
+
+    balance = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        default=0,
+        help_text="Qarzdorlik"
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.name
+
+class GugurtDistribution(models.Model):
+    """Markaziy ombordan viloyat/dilerga yuborilgan mahsulot."""
+
+    STATUS_CHOICES = [
+        ("pending", "Tayyorlanmoqda"),
+        ("sent", "Yuborildi"),
+        ("received", "Qabul qilindi"),
+    ]
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name="gugurt_distributions"
+    )
+
+    batch = models.ForeignKey(
+        GugurtImportBatch,
+        on_delete=models.PROTECT,
+        related_name="distributions"
+    )
+
+    dealer = models.ForeignKey(
+        GugurtDealer,
+        on_delete=models.PROTECT,
+        related_name="distributions"
+    )
+
+    quantity_kg = models.DecimalField(
+        max_digits=14,
+        decimal_places=2
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+
+    dispatch_date = models.DateField(
+        default=timezone.now
+    )
+
+    note = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    @property
+    def quantity_tonna(self):
+        return self.quantity_kg / 1000
+
+    def __str__(self):
+        return (
+            f"{self.batch.batch_number} → "
+            f"{self.dealer.name} - "
+            f"{self.quantity_kg} kg"
+        )
+
+
+
+
+
+
+from django.db import models
+
+# 1. Qurilish ob'yektlari (Masalan: Toshkent City 4-blok)
+class ConstructionSite(models.Model):
+    tenant = models.ForeignKey('Tenant', on_delete=models.CASCADE, verbose_name="Tashkilot")
+    name = models.CharField(max_length=255, verbose_name="Ob'yekt nomi")
+    address = models.TextField(blank=True, null=True, verbose_name="Manzili")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+# 2. Materiallar ma'lumotnomasi (Sement, qum, g'isht...)
+class ConstructionMaterial(models.Model):
+    tenant = models.ForeignKey('Tenant', on_delete=models.CASCADE, verbose_name="Tashkilot")
+    name = models.CharField(max_length=255, verbose_name="Material nomi")
+    unit_choices = [
+        ('ton', 'Tonna'),
+        ('m3', 'Kub metr (m³)'),
+        ('bag', 'Qop'),
+        ('pcs', 'Dona'),
+        ('kg', 'Kilogramm'),
+    ]
+    unit = models.CharField(max_length=10, choices=unit_choices, default='pcs', verbose_name="O'lchov birligi")
+
+    def __str__(self):
+        return f"{self.name} ({self.get_unit_display()})"
+
+
+# 3. Ob'yektga material kelishi (Prarab qabul qiladigan kirim nakladnoygi)
+class MaterialReceipt(models.Model):
+    tenant = models.ForeignKey('Tenant', on_delete=models.CASCADE, verbose_name="Tashkilot")
+    site = models.ForeignKey(ConstructionSite, on_delete=models.CASCADE, verbose_name="Qurilish ob'yekti")
+    material = models.ForeignKey(ConstructionMaterial, on_delete=models.CASCADE, verbose_name="Material")
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Miqdori")
+    supplier_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Yetkazib beruvchi (Kimdan)")
+    date = models.DateField(verbose_name="Kelgan sana")
+    note = models.TextField(blank=True, null=True, verbose_name="Izoh / Nakladnoy raqami")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.site.name} - {self.material.name}: {self.quantity}"
+
+
+# 4. Prarab tomonidan materialning ishlatilishi (Chiqim)
+class MaterialConsumption(models.Model):
+    tenant = models.ForeignKey('Tenant', on_delete=models.CASCADE, verbose_name="Tashkilot")
+    site = models.ForeignKey(ConstructionSite, on_delete=models.CASCADE, verbose_name="Qurilish ob'yekti")
+    material = models.ForeignKey(ConstructionMaterial, on_delete=models.CASCADE, verbose_name="Material")
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Ishlatilgan miqdor")
+    date = models.DateField(verbose_name="Ishlatilgan sana")
+    used_for = models.CharField(max_length=255, verbose_name="Qayerga ishlatildi (Masalan: 2-qavat uringa)")
+    prarab_name = models.CharField(max_length=255, verbose_name="Prarab F.I.O")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.site.name} da {self.material.name} ishlatildi: {self.quantity}"

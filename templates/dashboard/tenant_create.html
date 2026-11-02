@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Yangi Tashkilot Qo'shish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
+        <h1 class="text-lg font-bold text-gray-800">Yangi Tashkilot (Tenant) Qo'shish</h1>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Tashkilot nomi</label>
+                <input type="text" name="name" required placeholder="Masalan: Asosiy Filial" class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Kategoriya</label>
+                <select name="category_id" class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% empty %}
+                        <option value="">Kategoriya mavjud emas (Avtomatik yaratiladi)</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <a href="{% url 'tenant_list' slug|default:'main' tenant_id|default:1 %}" class="text-xs text-gray-500 hover:underline">Bekor qilish</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-lg font-medium">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

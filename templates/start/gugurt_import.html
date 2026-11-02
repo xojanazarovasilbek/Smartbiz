@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Import | {{ tenant.name }}
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                sans-serif;
+        }
+
+        .page {
+            max-width: 1050px;
+            margin: auto;
+            padding: 35px 20px 70px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #6b7280;
+        }
+
+        .card-custom {
+            background: white;
+            border: 1px solid #eef0f4;
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow:
+                0 10px 35px rgba(0,0,0,.04);
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 19px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+            border: 1px solid #dfe3e8;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #111827;
+            box-shadow: 0 0 0 .2rem rgba(17,24,39,.08);
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid #eef0f4;
+        }
+
+        .info-icon {
+            font-size: 25px;
+        }
+
+        .cost-box {
+            background: #111827;
+            color: white;
+            border-radius: 18px;
+            padding: 22px;
+            margin-top: 25px;
+        }
+
+        .back-btn {
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            color: #111827;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <div class="top">
+
+        <div>
+
+            <a
+                href="{% url 'gugurt_dashboard' tenant.category.slug tenant.id %}"
+                class="back-btn"
+            >
+                <i class="bi bi-arrow-left"></i>
+                Dashboard
+            </a>
+
+            <h1 class="title mt-3">
+                Yangi import
+            </h1>
+
+            <div class="subtitle">
+                Xitoydan kelgan mahsulotni omborga kiriting
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <span class="badge text-bg-light p-2">
+                {{ tenant.name }}
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+
+        <!-- FORM -->
+
+        <div class="col-lg-8">
+
+            <div class="card-custom">
+
+                <form
+                    method="POST"
+                    novalidate
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- MAHSULOT -->
+
+                    <div class="section-title">
+                        1. Mahsulot ma'lumotlari
+                    </div>
+
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Mahsulot
+                        </label>
+
+                        {{ form.product }}
+
+                        {% if form.product.errors %}
+
+                            <div class="text-danger small mt-1">
+
+                                {{ form.product.errors }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="row g-3">
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Partiya raqami
+                            </label>
+
+                            {{ form.batch_number }}
+
+                            {% if form.batch_number.errors %}
+
+                                <div class="text-danger small mt-1">
+                                    {{ form.batch_number.errors }}
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Mamlakat
+                            </label>
+
+                            {{ form.country }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Miqdor (tonna)
+                            </label>
+
+                            {{ form.quantity_tonna }}
+
+                            <small class="text-muted">
+                                Masalan: 20 = 20 tonna
+                            </small>
+
+                            {% if form.quantity_tonna.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.quantity_tonna.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Import sanasi
+                            </label>
+
+                            {{ form.import_date }}
+
+                        </div>
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- XARAJATLAR -->
+
+                    <div class="section-title">
+                        2. Import xarajatlari
+                    </div>
+
+
+                    <div class="row g-3">
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Mahsulot narxi
+                            </label>
+
+                            {{ form.product_cost }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Transport
+                            </label>
+
+                            {{ form.transport_cost }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Bojxona
+                            </label>
+
+                            {{ form.customs_cost }}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Boshqa xarajat
+                            </label>
+
+                            {{ form.other_cost }}
+
+                        </div>
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- IZOH -->
+
+                    <div class="section-title">
+                        3. Qo‘shimcha ma'lumot
+                    </div>
+
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Izoh
+                        </label>
+
+                        {{ form.note }}
+
+                    </div>
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+
+                            {{ form.non_field_errors }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- BUTTON -->
+
+                    <div class="d-flex gap-2">
+
+                        <a
+                            href="{% url 'gugurt_dashboard' tenant.category.slug tenant.id %}"
+                            class="btn btn-light btn-lg px-4"
+                        >
+                            Bekor qilish
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-dark btn-lg px-5"
+                        >
+
+                            <i class="bi bi-box-arrow-in-down"></i>
+
+                            Importni saqlash
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- INFO -->
+
+        <div class="col-lg-4">
+
+
+            <div class="card-custom mb-4">
+
+                <div class="section-title">
+                    Import qanday ishlaydi?
+                </div>
+
+
+                <div class="info-box mb-3">
+
+                    <div class="info-icon">
+                        🇨🇳
+                    </div>
+
+                    <strong>
+                        Xitoy
+                    </strong>
+
+                    <div class="text-muted small">
+                        Mahsulot kelib chiqishi
+                    </div>
+
+                </div>
+
+
+                <div class="info-box mb-3">
+
+                    <div class="info-icon">
+                        📦
+                    </div>
+
+                    <strong>
+                        Ombor
+                    </strong>
+
+                    <div class="text-muted small">
+                        Kiritilgan miqdor avtomatik
+                        omborga qo‘shiladi
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <div class="info-icon">
+                        📊
+                    </div>
+
+                    <strong>
+                        Hisobot
+                    </strong>
+
+                    <div class="text-muted small">
+                        Import partiyasi dashboardda
+                        ko‘rinadi
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="cost-box">
+
+                <div class="small opacity-75">
+                    Eslatma
+                </div>
+
+                <h5 class="mt-2">
+                    1 tonna = 1 000 kg
+                </h5>
+
+                <p class="mb-0 opacity-75">
+                    Masalan, 20 tonna kiritsangiz,
+                    tizim omborga 20 000 kg
+                    qo‘shadi.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

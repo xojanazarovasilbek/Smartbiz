@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from . import views
+from . import views 
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -107,4 +107,58 @@ urlpatterns = [
     path("dashboard/<slug:slug>/<int:tenant_id>/bogcha-groups/<int:pk>/edit/", views.bogcha_group_edit, name="bogcha_group_edit"),
     path("dashboard/<slug:slug>/<int:tenant_id>/bogcha-groups/<int:pk>/delete/", views.bogcha_group_delete, name="bogcha_group_delete"),
     path("dashboard/<slug:slug>/<int:tenant_id>/audit-log/", views.audit_log_list, name="audit_log_list"),
+
+
+    path('dashboard12/<slug:slug>/<int:tenant_id>/tenants/', views.tenant_list, name='tenant_list'),
+    path('dashboard12/<slug:slug>/<int:tenant_id>/tenants/create/', views.tenant_create, name='tenant_create'),
+
+
+
+
+    path(
+        "dashboard/<slug:slug>/<int:tenant_id>/gugurt/",
+        views.gugurt_dashboard,
+        name="gugurt_dashboard",
+    ),
+
+
+    path(
+        "dashboard/<slug:slug>/<int:tenant_id>/gugurt/import/",
+        views.gugurt_import_create,
+        name="gugurt_import_create",
+    ),
+
+    path(
+        "dashboard/<slug:slug>/<int:tenant_id>/gugurt/dealers/",
+        views.gugurt_dealers,
+        name="gugurt_dealers",
+    ),
+
+    path(
+        "dashboard/<slug:slug>/<int:tenant_id>/gugurt/dealers/add/",
+        views.gugurt_dealer_create,
+        name="gugurt_dealer_create",
+    ),
+
+    
+
+    path(
+        "dashboard/<slug:slug>/<int:tenant_id>/gugurt/distribution/add/",
+        views.gugurt_distribution_create,
+        name="gugurt_distribution_create",
+    ),
+
+
+
+
+    # Qurilish logistikasi va Prarablar modullari
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/sites/", views.qurilish_sites_list, name="qurilish_sites_list"),
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/receipt/add/", views.material_receipt_create, name="material_receipt_create"),
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/consumption/add/", views.material_consumption_create, name="material_consumption_create"),
+
+
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/", views.qurilish_pro_dashboard, name="qurilish_dashboard"),
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/sites/add/", views.qurilish_site_create, name="qurilish_site_create"),
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/materials/add/", views.qurilish_material_create, name="qurilish_material_create"),
+    path("dashboard/<slug:slug>/<int:tenant_id>/qurilish/sites/<int:pk>/", views.qurilish_site_detail, name="qurilish_site_detail"),
 ]
